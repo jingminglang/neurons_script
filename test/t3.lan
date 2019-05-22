@@ -1,0 +1,12 @@
+
+
+a = call_lua("add","jingminglang")
+
+// if a eq "jimila" 
+print a
+if a eq "test addjingminglang" 
+then
+  print "yes"
+else 
+  print "no"
+fi

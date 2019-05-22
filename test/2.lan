@@ -1,0 +1,14 @@
+
+//a = "dd2"
+//a = `dd4`
+a = "dd4"
+b = "dd1"
+
+// if (not a eq \"dd1\" ) and ((not a eq \"dd2\") and (not a eq \"dd3\")) then exit_cmd = \"quit\" fi; if (not b eq \"dd1\") and ((not b eq  \"dd2\") and (not b eq \"dd3\")) then exit_cmd = \"quit\" fi; if b eq \"dd3\" then b_1 = \"dd4\" else b_1 = b fi ; if a eq \"dd3\" then a_1 = \"dd4\" else a_1 = a fi
+
+// if not a in [""]
+
+if ( not a eq "dd1") or ((not a eq "dd2") or (not a eq "dd3")) then exit_cmd = "quit" fi;
+//if (b not eq "dd1") or (b not eq "dd2") or (b not eq "dd3") then exit_cmd = "quit" fi;
+
+print exit_cmd

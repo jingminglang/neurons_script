@@ -1,0 +1,20 @@
+g = "dd1"
+// if g eq "dd2" then a = "dd2" b = "dd1" a_1 = a b_1 = b c = "dd2" d = "dd1" c_1 = c d_1 = d e  = "dd2" f = "dd1" e_1 = e f_1 = f fi; if g eq "dd1" then a = "dd1" b = "dd3" a_1 = a b_1 = "dd4" c = "dd3" d = "dd3" c_1 = "dd4" d_1 = "dd4" e = "dd2" f = "dd2" e_1 = e f_1 = f fi; if g eq "dd3" then a = "dd3" b = "dd1" a_1 = "dd4" b_1 = b c = "dd1" d = "dd1" c_1 = c d_1 = d e = "dd2" f = "dd2" e_1 = e f_1 = f fi
+
+// if g eq "dd2" then a = "dd2" b = "dd1" a_1 = a b_1 = b c = "dd2" d = "dd1" c_1 = c d_1 = d e  = "dd2" f = "dd1" e_1 = e f_1 = f fi ; if g eq "dd1" then a = "dd1" b = "dd3" a_1 = a b_1 = "dd4" c = "dd3" d = "dd3" c_1 = "dd4" d_1 = "dd4" e = "dd2" f = "dd2" e_1 = e f_1 = f fi if g eq "dd3" then a = "dd3" b = "dd1" a_1 = "dd4" b_1 = b c = "dd1" d = "dd1" c_1 = c d_1 = d e = "dd2" f = "dd2" e_1 = e f_1 = f fi
+
+if g eq "dd2" then a = "dd2" b = "dd1" a_1 = a b_1 = b c = "dd2" d = "dd1" c_1 = c d_1 = d e  = "dd2" f = "dd1" e_1 = e f_1 = f fi ; if g eq "dd1" then a = "dd1" b = "dd3" a_1 = a b_1 = "dd4" c = "dd3" d = "dd3" c_1 = "dd4" d_1 = "dd4" e = "dd2" f = "dd2" e_1 = e f_1 = f fi if g eq "dd3" then a = "dd3" b = "dd1" a_1 = "dd4" b_1 = b c = "dd1" d = "dd1" c_1 = c d_1 = d e = "dd2" f = "dd2" e_1 = e f_1 = f fi
+
+print a
+print b
+print a_1
+print b_1
+print c
+print d
+print c_1
+print d_1
+print e
+print f
+print e_1
+print f_1
+

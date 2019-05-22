@@ -1,0 +1,9 @@
+
+// a = dd1
+// print a
+a = "dd1"
+// print a
+//a = `dd2`
+//a = 'dd2'
+//a = _ dd2 _
+print a

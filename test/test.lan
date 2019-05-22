@@ -1,0 +1,51 @@
+
+// /home/jimila/Desktop/nut/我的坚果云/iPhone/study/lab/golang/mylan/main -f
+// test
+
+a = 20
+b = 3
+
+if b>3
+then
+  c = 10
+else
+ c = 3
+fi
+
+print (a+c)*3
+
+s = "jing ming lang"
+
+print "a: "  +  s
+
+t1 = {1,2,3}
+t2 = s.split(" ")
+for k,v in t2
+do
+    s ~= v : "m"
+done
+
+for line in <>
+do
+done
+v = S(
+   (+ 1 2)
+)
+
+fn sum(a,b) {
+   a + b
+}
+sum = S(
+  (def sum (a,b) (
+       (+ a b)
+      ))
+)
+
+m = S(
+  (sum a b)
+)(1,2)
+
+
+type(m).addFn(sum)
+m.sum(2,3)
+
