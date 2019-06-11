@@ -3,7 +3,7 @@ state 0
 	$accept: .program $end 
 	stmt_block: .    (2)
 
-	.  reduce 2 (src line 50)
+	.  reduce 2 (src line 41)
 
 	program  goto 1
 	stmt_block  goto 2
@@ -22,7 +22,7 @@ state 2
 	IF  shift 7
 	PRINT  shift 8
 	IDENTIFIER  shift 10
-	.  reduce 1 (src line 47)
+	.  reduce 1 (src line 38)
 
 	var  goto 9
 	statement  goto 3
@@ -33,7 +33,7 @@ state 2
 state 3
 	stmt_block:  stmt_block statement.    (3)
 
-	.  reduce 3 (src line 52)
+	.  reduce 3 (src line 43)
 
 
 state 4
@@ -41,7 +41,7 @@ state 4
 	statement:  if_stmt.SP 
 
 	SP  shift 11
-	.  reduce 4 (src line 55)
+	.  reduce 4 (src line 46)
 
 
 state 5
@@ -49,7 +49,7 @@ state 5
 	statement:  print_stmt.SP 
 
 	SP  shift 12
-	.  reduce 6 (src line 58)
+	.  reduce 6 (src line 49)
 
 
 state 6
@@ -57,7 +57,7 @@ state 6
 	statement:  assign_stmt.SP 
 
 	SP  shift 13
-	.  reduce 8 (src line 60)
+	.  reduce 8 (src line 51)
 
 
 state 7
@@ -102,25 +102,25 @@ state 9
 state 10
 	var:  IDENTIFIER.    (25)
 
-	.  reduce 25 (src line 103)
+	.  reduce 25 (src line 100)
 
 
 state 11
 	statement:  if_stmt SP.    (5)
 
-	.  reduce 5 (src line 57)
+	.  reduce 5 (src line 48)
 
 
 state 12
 	statement:  print_stmt SP.    (7)
 
-	.  reduce 7 (src line 59)
+	.  reduce 7 (src line 50)
 
 
 state 13
 	statement:  assign_stmt SP.    (9)
 
-	.  reduce 9 (src line 61)
+	.  reduce 9 (src line 52)
 
 
 state 14
@@ -135,9 +135,9 @@ state 15
 	condition:  rel_condition.    (16)
 	sub_condition:  rel_condition.    (23)
 
-	AND  reduce 23 (src line 97)
-	OR  reduce 23 (src line 97)
-	.  reduce 16 (src line 84)
+	AND  reduce 23 (src line 94)
+	OR  reduce 23 (src line 94)
+	.  reduce 16 (src line 81)
 
 
 state 16
@@ -216,7 +216,7 @@ state 21
 state 22
 	expr:  STRING.    (28)
 
-	.  reduce 28 (src line 114)
+	.  reduce 28 (src line 115)
 
 
 state 23
@@ -231,7 +231,7 @@ state 24
 	arg_list:  arg_list.',' expr 
 
 	','  shift 43
-	.  reduce 13 (src line 75)
+	.  reduce 13 (src line 71)
 
 
 state 25
@@ -245,7 +245,7 @@ state 25
 	'-'  shift 37
 	'*'  shift 38
 	'/'  shift 39
-	.  reduce 14 (src line 79)
+	.  reduce 14 (src line 76)
 
 
 state 26
@@ -279,7 +279,7 @@ state 28
 	if_stmt:  IF condition THEN.stmt_block FI 
 	stmt_block: .    (2)
 
-	.  reduce 2 (src line 50)
+	.  reduce 2 (src line 41)
 
 	stmt_block  goto 46
 
@@ -316,13 +316,13 @@ state 30
 state 31
 	condition:  NOT sub_condition.    (19)
 
-	.  reduce 19 (src line 88)
+	.  reduce 19 (src line 85)
 
 
 state 32
 	sub_condition:  rel_condition.    (23)
 
-	.  reduce 23 (src line 97)
+	.  reduce 23 (src line 94)
 
 
 state 33
@@ -496,7 +496,7 @@ state 45
 	'-'  shift 37
 	'*'  shift 38
 	'/'  shift 39
-	.  reduce 12 (src line 70)
+	.  reduce 12 (src line 66)
 
 
 state 46
@@ -520,13 +520,13 @@ state 46
 state 47
 	condition:  sub_condition AND sub_condition.    (17)
 
-	.  reduce 17 (src line 86)
+	.  reduce 17 (src line 83)
 
 
 state 48
 	condition:  sub_condition OR sub_condition.    (18)
 
-	.  reduce 18 (src line 87)
+	.  reduce 18 (src line 84)
 
 
 state 49
@@ -540,7 +540,7 @@ state 49
 	'-'  shift 37
 	'*'  shift 38
 	'/'  shift 39
-	.  reduce 20 (src line 91)
+	.  reduce 20 (src line 88)
 
 
 state 50
@@ -554,7 +554,7 @@ state 50
 	'-'  shift 37
 	'*'  shift 38
 	'/'  shift 39
-	.  reduce 21 (src line 93)
+	.  reduce 21 (src line 90)
 
 
 state 51
@@ -568,41 +568,41 @@ state 51
 	'-'  shift 37
 	'*'  shift 38
 	'/'  shift 39
-	.  reduce 22 (src line 94)
+	.  reduce 22 (src line 91)
 
 
 state 52
 	expr:  expr.'+' expr 
-	expr:  expr '+' expr.    (31)
+	expr:  expr '+' expr.    (30)
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
 	'*'  shift 38
 	'/'  shift 39
-	.  reduce 31 (src line 117)
+	.  reduce 30 (src line 117)
 
 
 state 53
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
-	expr:  expr '-' expr.    (32)
+	expr:  expr '-' expr.    (31)
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
 	'*'  shift 38
 	'/'  shift 39
-	.  reduce 32 (src line 118)
+	.  reduce 31 (src line 118)
 
 
 state 54
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
-	expr:  expr '*' expr.    (33)
+	expr:  expr '*' expr.    (32)
 	expr:  expr.'/' expr 
 
-	.  reduce 33 (src line 119)
+	.  reduce 32 (src line 119)
 
 
 state 55
@@ -610,29 +610,29 @@ state 55
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
-	expr:  expr '/' expr.    (34)
+	expr:  expr '/' expr.    (33)
 
-	.  reduce 34 (src line 120)
+	.  reduce 33 (src line 120)
 
 
 state 56
 	sub_condition:  '(' condition ')'.    (24)
 
-	.  reduce 24 (src line 99)
+	.  reduce 24 (src line 96)
 
 
 state 57
 	expr:  '(' expr ')'.    (29)
 
-	.  reduce 29 (src line 115)
+	.  reduce 29 (src line 116)
 
 
 state 58
-	expr:  CALL_LUA '(' expr.',' expr ')' 
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
+	expr:  CALL_LUA '(' expr.',' expr ')' 
 
 	'+'  shift 36
 	'-'  shift 37
@@ -653,21 +653,21 @@ state 59
 	'-'  shift 37
 	'*'  shift 38
 	'/'  shift 39
-	.  reduce 15 (src line 81)
+	.  reduce 15 (src line 78)
 
 
 state 60
 	if_stmt:  IF condition THEN stmt_block ELSE.stmt_block FI 
 	stmt_block: .    (2)
 
-	.  reduce 2 (src line 50)
+	.  reduce 2 (src line 41)
 
 	stmt_block  goto 63
 
 state 61
 	if_stmt:  IF condition THEN stmt_block FI.    (11)
 
-	.  reduce 11 (src line 67)
+	.  reduce 11 (src line 63)
 
 
 state 62
@@ -700,11 +700,11 @@ state 63
 	print_stmt  goto 5
 
 state 64
-	expr:  CALL_LUA '(' expr ',' expr.')' 
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
+	expr:  CALL_LUA '(' expr ',' expr.')' 
 
 	'+'  shift 36
 	'-'  shift 37
@@ -717,13 +717,13 @@ state 64
 state 65
 	if_stmt:  IF condition THEN stmt_block ELSE stmt_block FI.    (10)
 
-	.  reduce 10 (src line 65)
+	.  reduce 10 (src line 61)
 
 
 state 66
-	expr:  CALL_LUA '(' expr ',' expr ')'.    (30)
+	expr:  CALL_LUA '(' expr ',' expr ')'.    (34)
 
-	.  reduce 30 (src line 116)
+	.  reduce 34 (src line 121)
 
 
 27 terminals, 13 nonterminals

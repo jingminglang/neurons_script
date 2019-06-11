@@ -1,0 +1,9 @@
+
+c = _lua("add","jimila")
+print c
+
+c = _lua("urlEncode","1+1")
+print c
+
+a = "jml"
+print a

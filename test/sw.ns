@@ -7,8 +7,10 @@
 // a = "dd3"
 // b = "dd3"
 
-a = "dd3"
-b = "dd1"
+a = "dd1"
+b = "dd3"
+
+
 
 if (not a eq "dd1" ) and ((not a eq "dd2") and (not a eq "dd3")) then 
   exit_cmd = "quit" 
@@ -46,33 +48,35 @@ if a_1 eq "dd4" then
 fi
 
 if (a_1 eq "dd1") and (b_1 eq "dd1") then
-    value="{'dd1':100,'dd2':0,'dd4':0}"
+    value = _lua("urlEncode",`{"dd1":100}`)
 fi
 
 if (a_1 eq "dd1") and (b_1 eq "dd4") then
-    value="{'dd1':0,'dd2':0,'dd4':100}"
+    value = _lua("urlEncode",`{"dd4":100}`)
 fi
 
 if (a_1 eq "dd4") and (b_1 eq "dd4") then
-    value="{'dd1':0,'dd2':0,'dd4':100}"
+    value = _lua("urlEncode",`{"dd4":100}`)
 fi
 
 if (a_1 eq "dd4") and (b_1 eq "dd1") then
-    value="{'dd1':100,'dd2':0,'dd4':0}"
+    value = _lua("urlEncode",`{"dd1":100}`)
 fi
 
 if (a_1 eq "dd2") and (b_1 eq "dd2") then
-    value="{'dd1':0,'dd2':100,'dd4':0}"
+    value = _lua("urlEncode",`{"dd2":100}`)
 fi
 
 if (a_1 eq "dd2") and (b_1 eq "dd1") then
-    value="{'dd1':100,'dd2':0,'dd4':0}"
+    value = _lua("urlEncode",`{"dd1":100}`)
 fi
 
 if (a_1 eq "dd2") and (b_1 eq "dd4") then
-    value="{'dd1':0,'dd2':0,'dd4':100}"
+    value = _lua("urlEncode",`{"dd4":100}`)
 fi
+
 
 print a_1
 print b_1
+// value = _lua("urlDecode",value)
 print value

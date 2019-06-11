@@ -1,0 +1,63 @@
+
+if (not a eq "dd1" ) and ((not a eq "dd2") and (not a eq "dd3")) then 
+  exit_cmd = "quit" 
+fi 
+
+if (not b eq "dd1") and ((not b eq  "dd2") and (not b eq "dd3")) then 
+   exit_cmd = "quit" 
+fi 
+
+if b eq "dd3" then 
+   b_1 = "dd4" 
+else 
+   b_1 = b 
+fi
+
+if a eq "dd3" then 
+   a_1 = "dd4" 
+else 
+   a_1 = a 
+fi 
+
+if a_1 eq "dd1" then
+    c_1 = "dd2" 
+    d_1 = "dd4" 
+fi 
+
+if a_1 eq "dd2" then 
+   c_1 = "dd1" 
+   d_1 = "dd4" 
+fi 
+
+if a_1 eq "dd4" then 
+   c_1 = "dd2" 
+   d_1 = "dd1" 
+fi
+
+if (a_1 eq "dd1") and (b_1 eq "dd1") then
+    value="%7b%22dd1%22%3a100%7d"
+fi
+
+if (a_1 eq "dd1") and (b_1 eq "dd4") then
+    value="%7b%22dd4%22%3a100%7d"
+fi
+
+if (a_1 eq "dd4") and (b_1 eq "dd4") then
+    value="%7b%22dd4%22%3a100%7d"
+fi
+
+if (a_1 eq "dd4") and (b_1 eq "dd1") then
+    value="%7b%22dd1%22%3a100%7d"
+fi
+
+if (a_1 eq "dd2") and (b_1 eq "dd2") then
+    value="%7b%22dd2%22%3a100%7d"
+fi
+
+if (a_1 eq "dd2") and (b_1 eq "dd1") then
+    value="%7b%22dd1%22%3a100%7d"
+fi
+
+if (a_1 eq "dd2") and (b_1 eq "dd4") then
+    value="%7b%22dd4%22%3a100%7d"
+fi

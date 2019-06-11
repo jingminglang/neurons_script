@@ -1,7 +1,7 @@
 package main
 
 import (
-	P "./lib/parser"
+	P "neurons_script/lib/parser"
 	//	"bytes"
 	"flag"
 	"fmt"
@@ -10,8 +10,10 @@ import (
 )
 
 var file_name string
+var lua_name string
 
 func init() {
+	flag.StringVar(&lua_name, "l", "", "lua脚本文件")
 	flag.StringVar(&file_name, "f", "", "脚本文件")
 	flag.Parse()
 	if file_name == "" {
@@ -22,11 +24,15 @@ func init() {
 
 func main() {
 
+
+	l, _ := ioutil.ReadFile(lua_name)
 	b, e := ioutil.ReadFile(file_name)
 	if e != nil {
 		fmt.Println("read file error")
 		return
 	}
+	LuaFun := string(l[:])
+	P.LuaFun = LuaFun
 	s := string(b[:])
 	// buf := new(bytes.Buffer)
 	// buf.ReadFrom(os.Stdin)

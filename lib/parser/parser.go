@@ -4,18 +4,7 @@ package parser
 import __yyfmt__ "fmt"
 
 //line parser.y:2
-import (
-	"fmt"
-	"io"
-	"log"
-	"text/scanner"
-	//    "os"
-	Lua "github.com/yuin/gopher-lua"
-	"strconv"
-	"strings"
-)
-
-//line parser.y:17
+//line parser.y:7
 type yySymType struct {
 	yys       int
 	num       float64
@@ -77,347 +66,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line parser.y:124
-
-var L = Lua.NewState()
-
-type Number float64
-type String string
-type Identifier string
-
-//type Et string
-
-type Statement interface {
-	Execute(ns NS)
-}
-
-type Expression interface {
-	Evaluate(ns NS) interface{}
-}
-
-type Lvalue interface {
-	Evaluate(ns NS) interface{}
-	Assign(v interface{}, ns NS)
-}
-
-type AssignStmt struct {
-	lval Lvalue
-	expr Expression
-}
-
-type BinExpr struct {
-	op       int
-	lhs, rhs Expression
-}
-
-type LogicExpr BinExpr
-type ArithExpr BinExpr
-type RelExpr BinExpr
-
-type IfStmt struct {
-	cond                    Expression
-	trueClause, falseClause []Statement
-}
-
-type CallLuaExpr struct {
-	fun Expression
-	arg Expression
-}
-
-type PrintStmt struct {
-	argList []Expression
-}
-
-type Lexer struct {
-	s         scanner.Scanner
-	program   []Statement
-	hasErrors bool
-}
-
-func (l *Lexer) Lex(lval *yySymType) int {
-	tok := l.s.Scan()
-	switch tok {
-	case scanner.EOF:
-		//fmt.Println("EOF: ")
-		return 0
-	case scanner.Int, scanner.Float:
-		lval.num, _ = strconv.ParseFloat(l.s.TokenText(), 64)
-		//fmt.Println("number: ",lval.num)
-		return NUMBER
-	case scanner.Ident:
-		ident := l.s.TokenText()
-		keyword, isKeyword := lexKeywords[ident]
-		if isKeyword {
-			//       fmt.Println("keyword: ",ident)
-			return keyword
-		}
-		//fmt.Println("ident: ",ident)
-		lval.str = ident
-		return IDENTIFIER
-	case scanner.String:
-		text := l.s.TokenText()
-		// fmt.Println("String: ",text)
-		text = text[1 : len(text)-1]
-		lval.str = text
-		return STRING
-		//	case scanner.RawString:
-		//		text := l.s.TokenText()
-		//                fmt.Println("String: ",text)
-		//		text = text[1 : len(text)-1]
-		//		lval.str = text
-		//		return STRING
-	//case scanner.Char:
-	//	text := l.s.TokenText()
-	//        fmt.Println("char: ",text)
-	//	return int(tok)
-	default:
-		if int(tok) == 59 {
-			return SP
-		}
-		// fmt.Println("tok: ",tok)
-		return int(tok)
-	}
-}
-
-func NewLexer(r io.Reader) *Lexer {
-	l := new(Lexer)
-	l.s.Init(r)
-	//l.s.Mode = scanner.ScanIdents | scanner.ScanInts | scanner.ScanFloats | scanner.ScanChars |  scanner.ScanStrings | scanner.SkipComments
-	l.s.Mode = scanner.ScanIdents | scanner.ScanInts | scanner.ScanFloats | scanner.ScanStrings | scanner.ScanComments | scanner.SkipComments
-	return l
-}
-
-func (l *Lexer) Error(s string) {
-	log.Println("Parser:", s)
-	l.hasErrors = true
-}
-
-func (l *Lexer) Program() []Statement {
-	if l.hasErrors {
-		return nil
-	}
-	return l.program
-}
-
-//var symTab = map[Identifier]interface{}{}
-type NS map[Identifier]interface{}
-
-func (v Number) Evaluate(ns NS) interface{} {
-	return v
-}
-
-func (s String) Evaluate(ns NS) interface{} {
-	return s
-}
-
-func (s *AssignStmt) Execute(ns NS) {
-	//s.lval.Assign(s.expr.Evaluate())
-	s.lval.Assign(s.expr.Evaluate(ns), ns)
-}
-
-func (id Identifier) Assign(val interface{}, ns NS) {
-	//symTab[id] = val
-	ns[id] = val
-}
-
-func (id Identifier) Evaluate(ns NS) interface{} {
-	//val, ok := symTab[id]
-	val, ok := ns[id]
-	if !ok {
-		log.Println("Identifier.Evaluate: symbol", id, "undefined")
-	}
-	return val
-}
-
-func (e *ArithExpr) Evaluate(ns NS) interface{} {
-	lhs := e.lhs.Evaluate(ns)
-	rhs := e.rhs.Evaluate(ns)
-
-	if e.op == '+' {
-		s1, ok1 := lhs.(String)
-		s2, ok2 := rhs.(String)
-		if ok1 && ok2 {
-			return s1 + s2
-		}
-	}
-	{
-		lhs := lhs.(Number)
-		rhs := rhs.(Number)
-		switch e.op {
-		case '+':
-			return lhs + rhs
-		case '-':
-			return lhs - rhs
-		case '*':
-			return lhs * rhs
-		case '/':
-			return lhs / rhs
-		default:
-			panic("unreached")
-		}
-	}
-}
-
-func (e *RelExpr) Evaluate(ns NS) interface{} {
-	lhs := e.lhs.Evaluate(ns)
-	rhs := e.rhs.Evaluate(ns)
-
-	if lhs, ok := lhs.(String); ok {
-		rhs := rhs.(String)
-		switch e.op {
-		case '<':
-			return lhs < rhs
-		case '>':
-			return lhs > rhs
-		case EQ:
-			return lhs == rhs
-		default:
-			panic("unreached")
-		}
-	}
-	{
-		lhs := lhs.(Number)
-		rhs := rhs.(Number)
-		switch e.op {
-		case '<':
-			return lhs < rhs
-		case '>':
-			return lhs > rhs
-		case EQ:
-			return lhs == rhs
-		default:
-			panic("unreached")
-		}
-	}
-}
-
-func (e *LogicExpr) Evaluate(ns NS) interface{} {
-	lhs := e.lhs.Evaluate(ns).(bool)
-
-	switch e.op {
-	case AND:
-		return lhs && e.rhs.Evaluate(ns).(bool)
-	case OR:
-		return lhs || e.rhs.Evaluate(ns).(bool)
-	case NOT:
-		return !lhs
-	default:
-		panic("unreached")
-	}
-}
-
-func callLua(fname string, farg string) string {
-	//先获取lua中定义的函数
-	fn := L.GetGlobal(fname)
-	if err := L.CallByParam(Lua.P{
-		Fn:      fn,
-		NRet:    1,
-		Protect: true,
-	}, Lua.LString(farg)); err != nil {
-		panic(err)
-	}
-	//这里获取函数返回值
-	ret := L.Get(-1)
-	return ret.String()
-}
-
-func (s *CallLuaExpr) Evaluate(ns NS) interface{} {
-	funName := s.fun.Evaluate(ns).(String)
-	argStr := s.arg.Evaluate(ns).(String)
-
-	var luaAddFun = `
-function add(str)
-     return "test add"..str
-end
-`
-	if err := L.DoString(luaAddFun); err != nil {
-		panic(err)
-	}
-
-	r := callLua(fmt.Sprintf("%s", funName), fmt.Sprintf("%s", argStr))
-	return String(r)
-}
-
-func (s *IfStmt) Execute(ns NS) {
-	if s.cond.Evaluate(ns).(bool) {
-		RunStmtBlock(s.trueClause, ns)
-	} else {
-		RunStmtBlock(s.falseClause, ns)
-	}
-}
-
-func (s *PrintStmt) Execute(ns NS) {
-	args := make([]interface{}, len(s.argList))
-	for i, expr := range s.argList {
-		args[i] = expr.Evaluate(ns)
-	}
-	fmt.Print(args...)
-	fmt.Println()
-}
-
-func RunStmtBlock(block []Statement, ns NS) {
-	for _, stmt := range block {
-		stmt.Execute(ns)
-	}
-}
-
-var lexKeywords = map[string]int{
-	"call_lua": CALL_LUA,
-	"CALL_LUA": CALL_LUA,
-	"IF":       IF,
-	"if":       IF,
-	"THEN":     THEN,
-	"then":     THEN,
-	"ELSE":     ELSE,
-	"else":     ELSE,
-	//	"END":   END,
-	"FI":    FI,
-	"fi":    FI,
-	"AND":   AND,
-	"and":   AND,
-	"OR":    OR,
-	"or":    OR,
-	"NOT":   NOT,
-	"not":   NOT,
-	"EQ":    EQ,
-	"eq":    EQ,
-	"PRINT": PRINT,
-	"print": PRINT,
-	";":     SP,
-}
-
-func Eval(str string, mp map[string]string) {
-
-	var my NS = make(NS)
-	//my[Identifier("a")] = String("dd1")
-	//my[Identifier("b")] = String("dd4")
-	//read := strings.NewReader(os.Args[1])
-
-	for k, v := range mp {
-		my[Identifier(k)] = String(v)
-	}
-	read := strings.NewReader(str)
-	lexer := NewLexer(read)
-	yyParse(lexer)
-	prog := lexer.Program()
-	//fmt.Printf("%+v", prog[0])
-	//fmt.Println("%+v", prog[0])
-	//fmt.Println("%#v", prog)
-	RunStmtBlock(prog, my)
-	for k, v := range my {
-		mp[string(k)] = fmt.Sprintf("%v", v)
-	}
-	//fmt.Println("%#v", my)
-}
-
-func EvalStr(str string) {
-	var my NS = make(NS)
-	read := strings.NewReader(str)
-	lexer := NewLexer(read)
-	yyParse(lexer)
-	prog := lexer.Program()
-	RunStmtBlock(prog, my)
-}
+//line parser.y:125
 
 // https://gnuu.org/2009/09/18/writing-your-own-toy-compiler/
 
@@ -482,7 +131,7 @@ var yyR2 = [...]int{
 	0, 1, 0, 2, 1, 2, 1, 2, 1, 2,
 	7, 5, 3, 2, 1, 3, 1, 3, 3, 2,
 	3, 3, 3, 1, 3, 1, 1, 1, 1, 3,
-	6, 3, 3, 3, 3,
+	3, 3, 3, 3, 6,
 }
 var yyChk = [...]int{
 
@@ -501,8 +150,8 @@ var yyDef = [...]int{
 	26, 27, 28, 0, 13, 14, 0, 0, 2, 0,
 	0, 19, 23, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 12, 0, 17, 18, 20,
-	21, 22, 31, 32, 33, 34, 24, 29, 0, 15,
-	2, 11, 0, 0, 0, 10, 30,
+	21, 22, 30, 31, 32, 33, 24, 29, 0, 15,
+	2, 11, 0, 0, 0, 10, 34,
 }
 var yyTok1 = [...]int{
 
@@ -862,151 +511,151 @@ yydefault:
 
 	case 1:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line parser.y:47
+		//line parser.y:38
 		{
 			yylex.(*Lexer).program = yyDollar[1].stmtBlock
 		}
 	case 2:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line parser.y:51
+		//line parser.y:42
 		{
 			yyVAL.stmtBlock = []Statement{}
 		}
 	case 3:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line parser.y:52
+		//line parser.y:43
 		{
 			yyVAL.stmtBlock = append(yyDollar[1].stmtBlock, yyDollar[2].stmt)
 		}
 	case 4:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line parser.y:56
+		//line parser.y:47
 		{
 			yyVAL.stmt = yyDollar[1].stmt
 		}
 	case 5:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line parser.y:57
+		//line parser.y:48
 		{
 			yyVAL.stmt = yyDollar[1].stmt
 		}
 	case 6:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line parser.y:58
+		//line parser.y:49
 		{
 			yyVAL.stmt = yyDollar[1].stmt
 		}
 	case 7:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line parser.y:59
+		//line parser.y:50
 		{
 			yyVAL.stmt = yyDollar[1].stmt
 		}
 	case 8:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line parser.y:60
+		//line parser.y:51
 		{
 			yyVAL.stmt = yyDollar[1].stmt
 		}
 	case 9:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line parser.y:61
+		//line parser.y:52
 		{
 			yyVAL.stmt = yyDollar[1].stmt
 		}
 	case 10:
 		yyDollar = yyS[yypt-7 : yypt+1]
-		//line parser.y:66
+		//line parser.y:62
 		{
 			yyVAL.stmt = &IfStmt{yyDollar[2].expr, yyDollar[4].stmtBlock, yyDollar[6].stmtBlock}
 		}
 	case 11:
 		yyDollar = yyS[yypt-5 : yypt+1]
-		//line parser.y:67
+		//line parser.y:63
 		{
 			yyVAL.stmt = &IfStmt{yyDollar[2].expr, yyDollar[4].stmtBlock, nil}
 		}
 	case 12:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line parser.y:71
+		//line parser.y:67
 		{
 			yyVAL.stmt = &AssignStmt{yyDollar[1].lval, yyDollar[3].expr}
 		}
 	case 13:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line parser.y:76
+		//line parser.y:72
 		{
 			yyVAL.stmt = &PrintStmt{yyDollar[2].argList}
 		}
 	case 14:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line parser.y:80
+		//line parser.y:77
 		{
 			yyVAL.argList = []Expression{yyDollar[1].expr}
 		}
 	case 15:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line parser.y:81
+		//line parser.y:78
 		{
 			yyVAL.argList = append(yyDollar[1].argList, yyDollar[3].expr)
 		}
 	case 16:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line parser.y:85
+		//line parser.y:82
 		{
 			yyVAL.expr = yyDollar[1].expr
 		}
 	case 17:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line parser.y:86
+		//line parser.y:83
 		{
 			yyVAL.expr = &LogicExpr{AND, yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 18:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line parser.y:87
+		//line parser.y:84
 		{
 			yyVAL.expr = &LogicExpr{OR, yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 19:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line parser.y:88
+		//line parser.y:85
 		{
 			yyVAL.expr = &LogicExpr{NOT, yyDollar[2].expr, nil}
 		}
 	case 20:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line parser.y:92
+		//line parser.y:89
 		{
 			yyVAL.expr = &RelExpr{EQ, yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 21:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line parser.y:93
+		//line parser.y:90
 		{
 			yyVAL.expr = &RelExpr{'<', yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 22:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line parser.y:94
+		//line parser.y:91
 		{
 			yyVAL.expr = &RelExpr{'>', yyDollar[1].expr, yyDollar[3].expr}
 		}
 	case 23:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line parser.y:98
+		//line parser.y:95
 		{
 			yyVAL.expr = yyDollar[1].expr
 		}
 	case 24:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line parser.y:99
+		//line parser.y:96
 		{
 			yyVAL.expr = yyDollar[2].expr
 		}
 	case 25:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line parser.y:103
+		//line parser.y:100
 		{
 			yyVAL.lval = Identifier(yyDollar[1].str)
 		}
@@ -1024,45 +673,45 @@ yydefault:
 		}
 	case 28:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line parser.y:114
+		//line parser.y:115
 		{
 			yyVAL.expr = String(yyDollar[1].str)
 		}
 	case 29:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line parser.y:115
+		//line parser.y:116
 		{
 			yyVAL.expr = yyDollar[2].expr
 		}
 	case 30:
-		yyDollar = yyS[yypt-6 : yypt+1]
-		//line parser.y:116
-		{
-			yyVAL.expr = &CallLuaExpr{yyDollar[3].expr, yyDollar[5].expr}
-		}
-	case 31:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		//line parser.y:117
 		{
 			yyVAL.expr = &ArithExpr{'+', yyDollar[1].expr, yyDollar[3].expr}
 		}
-	case 32:
+	case 31:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		//line parser.y:118
 		{
 			yyVAL.expr = &ArithExpr{'-', yyDollar[1].expr, yyDollar[3].expr}
 		}
-	case 33:
+	case 32:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		//line parser.y:119
 		{
 			yyVAL.expr = &ArithExpr{'*', yyDollar[1].expr, yyDollar[3].expr}
 		}
-	case 34:
+	case 33:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		//line parser.y:120
 		{
 			yyVAL.expr = &ArithExpr{'/', yyDollar[1].expr, yyDollar[3].expr}
+		}
+	case 34:
+		yyDollar = yyS[yypt-6 : yypt+1]
+		//line parser.y:121
+		{
+			yyVAL.expr = &CallLuaExpr{yyDollar[3].expr, yyDollar[5].expr}
 		}
 	}
 	goto yystack /* stack new state and value */
