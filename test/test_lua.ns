@@ -1,0 +1,8 @@
+
+
+
+r = _lua("shell","date")
+print r
+
+r = _lua("get","http://v5b7.com")
+print r

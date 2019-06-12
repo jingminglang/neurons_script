@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 	Lua "github.com/yuin/gopher-lua"
+	"net/http"
+	"github.com/cjoudrey/gluahttp"
 )
 
 
@@ -49,7 +51,7 @@ type IfStmt struct {
 
 type CallLuaExpr struct {
         fun  Expression
-        arg  Expression
+        argList  []Expression
 }
 
 type PrintStmt struct {
@@ -167,14 +169,19 @@ func (e *LogicExpr) Evaluate(ns NS) interface{} {
 	}
 }
 
-func callLua(fname string,farg string) string {
+func callLua(fname string,fargs ... string) string {
 	//先获取lua中定义的函数
+	ls := []Lua.LValue{}
+	for _,fg := range fargs {
+		ls = append(ls,Lua.LString(fg))
+		// ls = append(ls,fg)
+	}
 	fn := L.GetGlobal(fname)
 	if err := L.CallByParam(Lua.P{
 		Fn: fn,
 		NRet: 1,
 		Protect: true,
-	}, Lua.LString(farg)); err != nil {
+	}, ls...); err != nil {
 		panic(err)
 	}
 	//这里获取函数返回值
@@ -190,14 +197,26 @@ end
 
 func (s *CallLuaExpr) Evaluate(ns NS) interface{} {
 	funName := s.fun.Evaluate(ns).(String)
-	argStr := s.arg.Evaluate(ns).(String)
+	// argStr := s.arg.Evaluate(ns).(String)
+
+	args := make([]interface{}, len(s.argList))
+	for i, expr := range s.argList {
+		args[i] = expr.Evaluate(ns)
+	}
 
 	if err := L.DoString(LuaFun); err != nil {
 		panic(err)
                 // return String("null")
 	}
+	argList := []string{}
+	for _,v := range args {
+		vs := fmt.Sprintf("%s", v)
+		argList = append(argList,vs)
+	}
 
-	r := callLua(fmt.Sprintf("%s", funName), fmt.Sprintf("%s", argStr))
+	// r := callLua(fmt.Sprintf("%s", funName), fmt.Sprintf("%s", argStr))
+	// r := callLua(fmt.Sprintf("%s", funName), fmt.Sprintf("%s", argStr))
+	r := callLua(fmt.Sprintf("%s", funName), argList...)
         return String(r)
 }
 
@@ -274,6 +293,7 @@ var lexKeywords = map[string]int{
 var L = Lua.NewState()
 
 
+
 func Eval(str string,mp map[string]string) {
 
 	var my NS = make(NS)
@@ -300,6 +320,7 @@ func Eval(str string,mp map[string]string) {
 
 
 func EvalStr(str string) {
+	L.PreloadModule("http", gluahttp.NewHttpModule(&http.Client{}).Loader)
 	var my NS = make(NS)
 	read := strings.NewReader(str)
 	lexer := NewLexer(read)

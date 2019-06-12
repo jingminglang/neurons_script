@@ -46,9 +46,9 @@ stmt_block
 statement
 	: if_stmt { $$ = $1 }
 	| if_stmt SP { $$ = $1 }
-        | print_stmt { $$ = $1 }
-        | print_stmt SP { $$ = $1 }
-	| assign_stmt { $$ = $1 }
+  | print_stmt { $$ = $1 }
+  | print_stmt SP { $$ = $1 }
+  | assign_stmt { $$ = $1 }
 	| assign_stmt SP { $$ = $1 }
 //	| call_stmt  { $$ = $1 }
 //	| call_stmt SP  { $$ = $1 }
@@ -118,7 +118,8 @@ expr	: var { $$ = $1 }
 	| expr '-' expr { $$ = &ArithExpr{'-', $1, $3} }
 	| expr '*' expr { $$ = &ArithExpr{'*', $1, $3} }
 	| expr '/' expr { $$ = &ArithExpr{'/', $1, $3} }
-        | CALL_LUA '('  expr  ',' expr ')'  { $$ = &CallLuaExpr{$3,$5} }
+//  | CALL_LUA '('  expr  ',' expr ')'  { $$ = &CallLuaExpr{$3,$5} }
+  | CALL_LUA '(' expr ',' arg_list ')'  { $$ = &CallLuaExpr{$3,$5} }
 	;
 
 

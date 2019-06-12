@@ -1,0 +1,18 @@
+
+
+if [cond]
+then
+   [stmt]
+fi
+
+if [cond]
+then
+   [stmt]
+else
+   [stmt]
+fi
+
+while [cond]
+do
+   [stmt]
+done

@@ -1,4 +1,7 @@
 
+c = _lua("concat","hello ","world")
+print c
+
 c = _lua("add","jimila")
 print c
 
