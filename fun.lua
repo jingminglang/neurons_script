@@ -34,3 +34,7 @@ function get(url)
     })
     return response["body"]
 end
+
+function sleep(n)
+   os.execute("sleep " .. n)
+end

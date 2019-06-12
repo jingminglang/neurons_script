@@ -16,3 +16,17 @@ while [cond]
 do
    [stmt]
 done
+
+function add(a,b) {
+     return a+b
+}
+
+r = add(1,2)
+
+_lua()
+_lisp()
+_c()
+_js()
+
+
+

@@ -17,7 +17,7 @@ package parser
 %start program
 
 
-%token IF THEN ELSE FI AND OR NOT EQ SP PRINT CALL_LUA
+%token IF THEN ELSE FI WHILE DO DONE AND OR NOT EQ SP PRINT CALL_LUA
 %token <num> NUMBER
 %token <str> IDENTIFIER STRING
 
@@ -27,9 +27,9 @@ package parser
 
 
 %type <lval> var
-%type <expr> expr condition rel_condition sub_condition 
+%type <expr> expr condition rel_condition sub_condition
 // %type <stmt> statement if_stmt assign_stmt print_stmt call_stmt
-%type <stmt> statement if_stmt assign_stmt print_stmt
+%type <stmt> statement if_stmt while_stmt assign_stmt print_stmt call_stmt
 %type <argList> arg_list
 %type <stmtBlock> stmt_block program
 
@@ -46,22 +46,29 @@ stmt_block
 statement
 	: if_stmt { $$ = $1 }
 	| if_stmt SP { $$ = $1 }
+  | while_stmt { $$ = $1 }
+  | while_stmt SP { $$ = $1 }
   | print_stmt { $$ = $1 }
   | print_stmt SP { $$ = $1 }
   | assign_stmt { $$ = $1 }
 	| assign_stmt SP { $$ = $1 }
-//	| call_stmt  { $$ = $1 }
-//	| call_stmt SP  { $$ = $1 }
+	| call_stmt  { $$ = $1 }
+	| call_stmt SP  { $$ = $1 }
 	;
 
-// call_stmt : CALL_LUA '('  expr  ',' expr ')'  { $$ = &CallLuaExpr{$3,$5} }
-// 	  ;
+call_stmt : CALL_LUA '('  expr  ',' arg_list ')'  { $$ = &CallLuaExpr{$3,$5} }
+ 	  ;
 
 
 if_stmt
         : IF condition THEN stmt_block ELSE stmt_block FI { $$ = &IfStmt{$2, $4, $6} }
         | IF condition THEN stmt_block FI { $$ = &IfStmt{$2, $4, nil} }
         ;
+
+while_stmt
+    : WHILE condition DO stmt_block DONE { $$ = &WhileStmt{$2, $4} }
+    ;
+
 
 assign_stmt
 	: var '=' expr { $$ = &AssignStmt{$1, $3} }
@@ -108,6 +115,7 @@ var	: IDENTIFIER { $$ = Identifier($1) }
 
 // call_stmt : CALL_LUA '('  expr  ',' expr ')'  { $$ = &CallLuaExpr{$3,$5} }
 // 	  ;
+
 
 expr	: var { $$ = $1 }
 	| NUMBER { $$ = Number($1) }

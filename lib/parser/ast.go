@@ -7,6 +7,7 @@ import (
 	Lua "github.com/yuin/gopher-lua"
 	"net/http"
 	"github.com/cjoudrey/gluahttp"
+	"strconv"
 )
 
 
@@ -58,6 +59,18 @@ type PrintStmt struct {
 	argList []Expression
 }
 
+type WhileStmt struct {
+	cond Expression
+	body []Statement
+}
+
+func (s *WhileStmt) Execute(ns NS) {
+	for s.cond.Evaluate(ns).(bool) {
+		RunStmtBlock(s.body,ns)
+	}
+}
+
+
 
 
 //var symTab = map[Identifier]interface{}{}
@@ -91,6 +104,10 @@ func (id Identifier) Evaluate(ns NS) interface{} {
 	return val
 }
 
+func Float64toStr(i float64) string {
+	return strconv.FormatFloat(i, 'f', -1, 64)
+}
+
 
 func (e *ArithExpr) Evaluate(ns NS) interface{} {
 	lhs := e.lhs.Evaluate(ns)
@@ -101,6 +118,15 @@ func (e *ArithExpr) Evaluate(ns NS) interface{} {
 		s2, ok2 := rhs.(String)
 		if ok1 && ok2 {
 			return s1 + s2
+		}
+		if ok1 && !ok2 {
+			rhs := rhs.(Number)
+			return s1 + String(Float64toStr(float64(rhs)))
+		}
+
+		if !ok1 && ok2 {
+			lhs := lhs.(Number)
+			return String(Float64toStr(float64(lhs))) + s2
 		}
 	}
 	{
@@ -207,6 +233,7 @@ func (s *CallLuaExpr) Evaluate(ns NS) interface{} {
 	if err := L.DoString(LuaFun); err != nil {
 		panic(err)
                 // return String("null")
+
 	}
 	argList := []string{}
 	for _,v := range args {
@@ -218,6 +245,28 @@ func (s *CallLuaExpr) Evaluate(ns NS) interface{} {
 	// r := callLua(fmt.Sprintf("%s", funName), fmt.Sprintf("%s", argStr))
 	r := callLua(fmt.Sprintf("%s", funName), argList...)
         return String(r)
+}
+
+func (s *CallLuaExpr) Execute(ns NS) {
+	funName := s.fun.Evaluate(ns).(String)
+	// argStr := s.arg.Evaluate(ns).(String)
+
+	args := make([]interface{}, len(s.argList))
+	for i, expr := range s.argList {
+		args[i] = expr.Evaluate(ns)
+	}
+
+	if err := L.DoString(LuaFun); err != nil {
+		panic(err)
+                // return String("null")
+	}
+	argList := []string{}
+	for _,v := range args {
+		vs := fmt.Sprintf("%s", v)
+		argList = append(argList,vs)
+	}
+
+	callLua(fmt.Sprintf("%s", funName), argList...)
 }
 
 // func (s *CallLuaExpr) Execute(ns NS)  {
@@ -274,9 +323,14 @@ var lexKeywords = map[string]int{
 	"then":  THEN,
 	"ELSE":  ELSE,
 	"else":  ELSE,
-//	"END":   END,
 	"FI":   FI,
 	"fi":   FI,
+	"WHILE":   WHILE,
+	"while":   WHILE,
+	"DO":   DO,
+	"do":   DO,
+	"DONE":   DONE,
+	"done":   DONE,
 	"AND":   AND,
 	"and":   AND,
 	"OR":    OR,
@@ -296,6 +350,7 @@ var L = Lua.NewState()
 
 func Eval(str string,mp map[string]string) {
 
+	L.PreloadModule("http", gluahttp.NewHttpModule(&http.Client{}).Loader)
 	var my NS = make(NS)
 	//my[Identifier("a")] = String("dd1")
 	//my[Identifier("b")] = String("dd4")
