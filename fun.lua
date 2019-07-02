@@ -38,3 +38,26 @@ end
 function sleep(n)
    os.execute("sleep " .. n)
 end
+
+function getFromJson(jsonStr,key) 
+    local json = require("json")
+    local jsonObj = json.decode(jsonStr)
+    return  jsonObj[key]
+end
+
+function redis_get(key)
+    local redis = require "redis"
+    local red = redis:new()
+    local ok, err = red:connect("172.26.0.2", 6379)
+    local res, err = red:get(key)
+    return res
+end
+
+
+function redis_set(key,value)
+    local redis = require "redis"
+    local red = redis:new()
+    local ok, err = red:connect("172.26.0.2", 6379)
+    local res, err = red:set(key,value)
+    return res
+end

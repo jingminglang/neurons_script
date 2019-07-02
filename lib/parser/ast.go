@@ -7,6 +7,10 @@ import (
 	Lua "github.com/yuin/gopher-lua"
 	"net/http"
 	"github.com/cjoudrey/gluahttp"
+	LuaJson "layeh.com/gopher-json"
+	"github.com/BixData/gluabit32"
+	"github.com/BixData/gluasocket"
+	"github.com/zhu327/gluadb"
 	"strconv"
 )
 
@@ -53,6 +57,10 @@ type IfStmt struct {
 type CallLuaExpr struct {
         fun  Expression
         argList  []Expression
+}
+
+type ToNumExpr struct {
+	v Expression
 }
 
 type PrintStmt struct {
@@ -106,6 +114,14 @@ func (id Identifier) Evaluate(ns NS) interface{} {
 
 func Float64toStr(i float64) string {
 	return strconv.FormatFloat(i, 'f', -1, 64)
+}
+
+func Str2Float64(str string) float64 {
+	i, err := strconv.ParseFloat(str, 64)
+	if err != nil {
+		panic(err)
+	}
+	return i
 }
 
 
@@ -213,6 +229,12 @@ func callLua(fname string,fargs ... string) string {
 	//这里获取函数返回值
 	ret := L.Get(-1)
 	return ret.String()
+}
+
+func (s *ToNumExpr) Evaluate(ns NS) interface{} {
+	v := s.v.Evaluate(ns).(String)
+	r := Str2Float64(string(v))
+        return Number(r)
 }
 
 var LuaFun = `
@@ -331,6 +353,8 @@ var lexKeywords = map[string]int{
 	"do":   DO,
 	"DONE":   DONE,
 	"done":   DONE,
+	"NUM" : TO_NUM,
+	"num" : TO_NUM,
 	"AND":   AND,
 	"and":   AND,
 	"OR":    OR,
@@ -351,6 +375,10 @@ var L = Lua.NewState()
 func Eval(str string,mp map[string]string) {
 
 	L.PreloadModule("http", gluahttp.NewHttpModule(&http.Client{}).Loader)
+	gluasocket.Preload(L)
+	gluabit32.Preload(L)
+	gluadb.Preload(L)
+
 	var my NS = make(NS)
 	//my[Identifier("a")] = String("dd1")
 	//my[Identifier("b")] = String("dd4")
@@ -376,6 +404,11 @@ func Eval(str string,mp map[string]string) {
 
 func EvalStr(str string) {
 	L.PreloadModule("http", gluahttp.NewHttpModule(&http.Client{}).Loader)
+	LuaJson.Preload(L)
+	gluasocket.Preload(L)
+	gluabit32.Preload(L)
+	gluadb.Preload(L)
+
 	var my NS = make(NS)
 	read := strings.NewReader(str)
 	lexer := NewLexer(read)

@@ -4,6 +4,7 @@ package parser
 
 %}
 
+// 这里就是token对应的真实类型和存放值的地方
 %union{
 	num        float64
 	str        string
@@ -17,7 +18,7 @@ package parser
 %start program
 
 
-%token IF THEN ELSE FI WHILE DO DONE AND OR NOT EQ SP PRINT CALL_LUA
+%token IF THEN ELSE FI WHILE DO DONE AND OR NOT EQ SP PRINT CALL_LUA TO_NUM
 %token <num> NUMBER
 %token <str> IDENTIFIER STRING
 
@@ -43,6 +44,7 @@ stmt_block
 	| stmt_block statement { $$ = append($1, $2) }
 	;
 
+// 这里定义的都是没有返回值的
 statement
 	: if_stmt { $$ = $1 }
 	| if_stmt SP { $$ = $1 }
@@ -55,6 +57,8 @@ statement
 	| call_stmt  { $$ = $1 }
 	| call_stmt SP  { $$ = $1 }
 	;
+
+
 
 call_stmt : CALL_LUA '('  expr  ',' arg_list ')'  { $$ = &CallLuaExpr{$3,$5} }
  	  ;
@@ -117,6 +121,7 @@ var	: IDENTIFIER { $$ = Identifier($1) }
 // 	  ;
 
 
+// 这里定义的都是可以作为返回值的(右值)
 expr	: var { $$ = $1 }
 	| NUMBER { $$ = Number($1) }
 //        | string { $$ = $1 }
@@ -128,6 +133,7 @@ expr	: var { $$ = $1 }
 	| expr '/' expr { $$ = &ArithExpr{'/', $1, $3} }
 //  | CALL_LUA '('  expr  ',' expr ')'  { $$ = &CallLuaExpr{$3,$5} }
   | CALL_LUA '(' expr ',' arg_list ')'  { $$ = &CallLuaExpr{$3,$5} }
+  | TO_NUM '(' expr ')' { $$ = &ToNumExpr{$3} }
 	;
 
 

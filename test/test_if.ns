@@ -1,0 +1,9 @@
+
+
+a = "f"
+if a eq ""
+then 
+ print "a"
+else
+ print "b"
+fi

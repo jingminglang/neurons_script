@@ -1,0 +1,11 @@
+
+_lua("redis_set","ll",`{"dd1":40,"dd2":20,"dd3":40}`)
+a = _lua("redis_get","ll")
+dd1 = num(_lua("getFromJson",a,"dd1")) + 10
+
+
+//d = num(dd1) + 10
+
+print dd1
+
+name = `= cd $ips`

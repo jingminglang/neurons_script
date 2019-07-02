@@ -1,0 +1,11 @@
+
+
+
+
+js = `{"name":"jingminglang","age":30}`
+name = _lua("getFromJson",js,"name")
+print name
+
+
+age = _lua("getFromJson",js,"age")
+print age
