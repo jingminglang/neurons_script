@@ -1,14 +1,14 @@
 package main
 
 import (
-	P "neurons_script/lib/parser"
+	P "github.com/neurons-platform/neurons_script/lib/parser"
 	//	"bytes"
+	"bufio"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
-	"bufio"
-	"io"
 )
 
 // var file_name string
@@ -51,9 +51,7 @@ func readScript(scriptName string) string {
 	return r
 }
 
-
 func main() {
-
 
 	l, _ := ioutil.ReadFile(lua_name)
 	LuaFun := string(l[:])
@@ -61,7 +59,6 @@ func main() {
 
 	scriptName := os.Args[3]
 	// fmt.Println(arg)
-
 
 	// b, e := ioutil.ReadFile(file_name)
 
