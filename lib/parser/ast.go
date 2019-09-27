@@ -1,23 +1,23 @@
 package parser
 
 import (
-	"log"
 	"fmt"
-	"strings"
-	Lua "github.com/yuin/gopher-lua"
-	"net/http"
-	"github.com/cjoudrey/gluahttp"
-	LuaJson "layeh.com/gopher-json"
 	"github.com/BixData/gluabit32"
 	"github.com/BixData/gluasocket"
+	"github.com/cjoudrey/gluahttp"
+	Lua "github.com/yuin/gopher-lua"
 	"github.com/zhu327/gluadb"
+	LuaJson "layeh.com/gopher-json"
+	"log"
+	"net/http"
 	"strconv"
+	"strings"
 )
-
 
 type Number float64
 type String string
 type Identifier string
+
 //type Et string
 
 type Statement interface {
@@ -30,14 +30,13 @@ type Expression interface {
 
 type Lvalue interface {
 	Evaluate(ns NS) interface{}
-	Assign(v interface{},ns NS)
+	Assign(v interface{}, ns NS)
 }
 
 type AssignStmt struct {
 	lval Lvalue
 	expr Expression
 }
-
 
 type BinExpr struct {
 	op       int
@@ -48,15 +47,14 @@ type LogicExpr BinExpr
 type ArithExpr BinExpr
 type RelExpr BinExpr
 
-
 type IfStmt struct {
 	cond                    Expression
 	trueClause, falseClause []Statement
 }
 
 type CallLuaExpr struct {
-        fun  Expression
-        argList  []Expression
+	fun     Expression
+	argList []Expression
 }
 
 type ToNumExpr struct {
@@ -74,15 +72,12 @@ type WhileStmt struct {
 
 func (s *WhileStmt) Execute(ns NS) {
 	for s.cond.Evaluate(ns).(bool) {
-		RunStmtBlock(s.body,ns)
+		RunStmtBlock(s.body, ns)
 	}
 }
 
-
-
-
 //var symTab = map[Identifier]interface{}{}
-type NS  map[Identifier]interface{}
+type NS map[Identifier]interface{}
 
 func (v Number) Evaluate(ns NS) interface{} {
 	return v
@@ -94,11 +89,10 @@ func (s String) Evaluate(ns NS) interface{} {
 
 func (s *AssignStmt) Execute(ns NS) {
 	//s.lval.Assign(s.expr.Evaluate())
-	s.lval.Assign(s.expr.Evaluate(ns),ns)
+	s.lval.Assign(s.expr.Evaluate(ns), ns)
 }
 
-
-func (id Identifier) Assign(val interface{},ns NS) {
+func (id Identifier) Assign(val interface{}, ns NS) {
 	//symTab[id] = val
 	ns[id] = val
 }
@@ -123,7 +117,6 @@ func Str2Float64(str string) float64 {
 	}
 	return i
 }
-
 
 func (e *ArithExpr) Evaluate(ns NS) interface{} {
 	lhs := e.lhs.Evaluate(ns)
@@ -211,17 +204,17 @@ func (e *LogicExpr) Evaluate(ns NS) interface{} {
 	}
 }
 
-func callLua(fname string,fargs ... string) string {
+func callLua(fname string, fargs ...string) string {
 	//先获取lua中定义的函数
 	ls := []Lua.LValue{}
-	for _,fg := range fargs {
-		ls = append(ls,Lua.LString(fg))
+	for _, fg := range fargs {
+		ls = append(ls, Lua.LString(fg))
 		// ls = append(ls,fg)
 	}
 	fn := L.GetGlobal(fname)
 	if err := L.CallByParam(Lua.P{
-		Fn: fn,
-		NRet: 1,
+		Fn:      fn,
+		NRet:    1,
 		Protect: true,
 	}, ls...); err != nil {
 		panic(err)
@@ -234,7 +227,7 @@ func callLua(fname string,fargs ... string) string {
 func (s *ToNumExpr) Evaluate(ns NS) interface{} {
 	v := s.v.Evaluate(ns).(String)
 	r := Str2Float64(string(v))
-        return Number(r)
+	return Number(r)
 }
 
 var LuaFun = `
@@ -254,19 +247,19 @@ func (s *CallLuaExpr) Evaluate(ns NS) interface{} {
 
 	if err := L.DoString(LuaFun); err != nil {
 		panic(err)
-                // return String("null")
+		// return String("null")
 
 	}
 	argList := []string{}
-	for _,v := range args {
+	for _, v := range args {
 		vs := fmt.Sprintf("%s", v)
-		argList = append(argList,vs)
+		argList = append(argList, vs)
 	}
 
 	// r := callLua(fmt.Sprintf("%s", funName), fmt.Sprintf("%s", argStr))
 	// r := callLua(fmt.Sprintf("%s", funName), fmt.Sprintf("%s", argStr))
 	r := callLua(fmt.Sprintf("%s", funName), argList...)
-        return String(r)
+	return String(r)
 }
 
 func (s *CallLuaExpr) Execute(ns NS) {
@@ -280,12 +273,12 @@ func (s *CallLuaExpr) Execute(ns NS) {
 
 	if err := L.DoString(LuaFun); err != nil {
 		panic(err)
-                // return String("null")
+		// return String("null")
 	}
 	argList := []string{}
-	for _,v := range args {
+	for _, v := range args {
 		vs := fmt.Sprintf("%s", v)
-		argList = append(argList,vs)
+		argList = append(argList, vs)
 	}
 
 	callLua(fmt.Sprintf("%s", funName), argList...)
@@ -294,7 +287,7 @@ func (s *CallLuaExpr) Execute(ns NS) {
 // func (s *CallLuaExpr) Execute(ns NS)  {
 // 	funName := s.fun.Evaluate(ns).(String)
 // 	argStr := s.arg.Evaluate(ns).(String)
-// 
+//
 // 	var luaAddFun = `
 // function add(str)
 //      return "test add"..str
@@ -303,19 +296,17 @@ func (s *CallLuaExpr) Execute(ns NS) {
 // 	if err := L.DoString(luaAddFun); err != nil {
 // 		panic(err)
 // 	}
-// 
+//
 //         callLua(fmt.Sprintf("%s", funName), fmt.Sprintf("%s", argStr))
 // }
 
-
 func (s *IfStmt) Execute(ns NS) {
 	if s.cond.Evaluate(ns).(bool) {
-		RunStmtBlock(s.trueClause,ns)
+		RunStmtBlock(s.trueClause, ns)
 	} else {
-		RunStmtBlock(s.falseClause,ns)
+		RunStmtBlock(s.falseClause, ns)
 	}
 }
-
 
 func (s *PrintStmt) Execute(ns NS) {
 	args := make([]interface{}, len(s.argList))
@@ -326,55 +317,50 @@ func (s *PrintStmt) Execute(ns NS) {
 	fmt.Println()
 }
 
-
-
-
-func RunStmtBlock(block []Statement,ns NS) {
+func RunStmtBlock(block []Statement, ns NS) {
 	for _, stmt := range block {
 		stmt.Execute(ns)
 	}
 }
 
-
 var lexKeywords = map[string]int{
-	"_lua":    CALL_LUA,
-	"_LUA":    CALL_LUA,
+	"_lua":  CALL_LUA,
+	"_LUA":  CALL_LUA,
 	"IF":    IF,
 	"if":    IF,
 	"THEN":  THEN,
 	"then":  THEN,
 	"ELSE":  ELSE,
 	"else":  ELSE,
-	"FI":   FI,
-	"fi":   FI,
-	"WHILE":   WHILE,
-	"while":   WHILE,
-	"DO":   DO,
-	"do":   DO,
-	"DONE":   DONE,
-	"done":   DONE,
-	"NUM" : TO_NUM,
-	"num" : TO_NUM,
+	"FI":    FI,
+	"fi":    FI,
+	"WHILE": WHILE,
+	"while": WHILE,
+	"DO":    DO,
+	"do":    DO,
+	"DONE":  DONE,
+	"done":  DONE,
+	"NUM":   TO_NUM,
+	"num":   TO_NUM,
 	"AND":   AND,
 	"and":   AND,
 	"OR":    OR,
 	"or":    OR,
 	"NOT":   NOT,
 	"not":   NOT,
-	"EQ":   EQ,
-	"eq":   EQ,
+	"EQ":    EQ,
+	"eq":    EQ,
 	"PRINT": PRINT,
 	"print": PRINT,
-	";":   SP,
+	";":     SP,
 }
 
 var L = Lua.NewState()
 
-
-
-func Eval(str string,mp map[string]string) {
+func Eval(str string, mp map[string]string) {
 
 	L.PreloadModule("http", gluahttp.NewHttpModule(&http.Client{}).Loader)
+	LuaJson.Preload(L)
 	gluasocket.Preload(L)
 	gluabit32.Preload(L)
 	gluadb.Preload(L)
@@ -394,13 +380,12 @@ func Eval(str string,mp map[string]string) {
 	//fmt.Printf("%+v", prog[0])
 	//fmt.Println("%+v", prog[0])
 	//fmt.Println("%#v", prog)
-	RunStmtBlock(prog,my)
+	RunStmtBlock(prog, my)
 	for k, v := range my {
 		mp[string(k)] = fmt.Sprintf("%v", v)
 	}
 	//fmt.Println("%#v", my)
 }
-
 
 func EvalStr(str string) {
 	L.PreloadModule("http", gluahttp.NewHttpModule(&http.Client{}).Loader)
@@ -415,5 +400,5 @@ func EvalStr(str string) {
 	// fmt.Printf("%+v",lexer)
 	yyParse(lexer)
 	prog := lexer.Program()
-	RunStmtBlock(prog,my)
+	RunStmtBlock(prog, my)
 }
