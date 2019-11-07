@@ -55,7 +55,7 @@ func main() {
 
 	l, _ := ioutil.ReadFile(lua_name)
 	LuaFun := string(l[:])
-	P.LuaFun = LuaFun
+	P.L.DoString(LuaFun)
 
 	scriptName := os.Args[3]
 	// fmt.Println(arg)

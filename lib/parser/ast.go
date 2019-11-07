@@ -231,11 +231,11 @@ func (s *ToNumExpr) Evaluate(ns NS) interface{} {
 	return Number(r)
 }
 
-var LuaFun = `
-function test(str)
-     return "test add"..str
-end
-`
+// var LuaFun = `
+// function test(str)
+//      return "test add"..str
+// end
+// `
 
 func (s *CallLuaExpr) Evaluate(ns NS) interface{} {
 	funName := s.fun.Evaluate(ns).(String)
@@ -246,11 +246,11 @@ func (s *CallLuaExpr) Evaluate(ns NS) interface{} {
 		args[i] = expr.Evaluate(ns)
 	}
 
-	if err := L.DoString(LuaFun); err != nil {
-		panic(err)
-		// return String("null")
+	// if err := L.DoString(LuaFun); err != nil {
+	// 	panic(err)
 
-	}
+	// }
+
 	argList := []string{}
 	for _, v := range args {
 		vs := fmt.Sprintf("%s", v)
@@ -272,10 +272,10 @@ func (s *CallLuaExpr) Execute(ns NS) {
 		args[i] = expr.Evaluate(ns)
 	}
 
-	if err := L.DoString(LuaFun); err != nil {
-		panic(err)
-		// return String("null")
-	}
+	// if err := L.DoString(LuaFun); err != nil {
+	// 	panic(err)
+	// }
+
 	argList := []string{}
 	for _, v := range args {
 		vs := fmt.Sprintf("%s", v)
