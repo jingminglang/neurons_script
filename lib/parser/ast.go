@@ -5,7 +5,7 @@ import (
 	"github.com/BixData/gluabit32"
 	"github.com/BixData/gluasocket"
 	"github.com/cjoudrey/gluahttp"
-	Lua "github.com/yuin/gopher-lua"
+	Lua "github.com/neurons-platform/gopher-lua"
 	"github.com/zhu327/gluadb"
 	LuaJson "layeh.com/gopher-json"
 	"log"
@@ -357,13 +357,15 @@ var lexKeywords = map[string]int{
 
 var L = Lua.NewState()
 
-func Eval(str string, mp map[string]string) {
-
+func init() {
 	L.PreloadModule("http", gluahttp.NewHttpModule(&http.Client{}).Loader)
 	LuaJson.Preload(L)
 	gluasocket.Preload(L)
 	gluabit32.Preload(L)
 	gluadb.Preload(L)
+}
+
+func Eval(str string, mp map[string]string) {
 
 	var my NS = make(NS)
 	//my[Identifier("a")] = String("dd1")
@@ -388,11 +390,6 @@ func Eval(str string, mp map[string]string) {
 }
 
 func EvalStr(str string) {
-	L.PreloadModule("http", gluahttp.NewHttpModule(&http.Client{}).Loader)
-	LuaJson.Preload(L)
-	gluasocket.Preload(L)
-	gluabit32.Preload(L)
-	gluadb.Preload(L)
 
 	var my NS = make(NS)
 	read := strings.NewReader(str)
