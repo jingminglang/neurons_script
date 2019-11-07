@@ -2,6 +2,7 @@ package main
 
 import (
 	P "github.com/neurons-platform/neurons_script/lib/parser"
+	"github.com/neurons-platform/neurons_script/gomod"
 	//	"bytes"
 	"bufio"
 	"flag"
@@ -55,7 +56,11 @@ func main() {
 
 	l, _ := ioutil.ReadFile(lua_name)
 	LuaFun := string(l[:])
-	P.L.DoString(LuaFun)
+	// P.L.PreloadModule("gomod",gomod.Loader)
+	P.LuaPools.PreloadModule("gomod",gomod.Loader)
+	P.LuaPools.DoString(LuaFun)
+	// P.L.Close()
+	// P.L.LoadString(LuaFun)
 
 	scriptName := os.Args[3]
 	// fmt.Println(arg)

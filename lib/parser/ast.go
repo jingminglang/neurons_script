@@ -5,12 +5,11 @@ import (
 	"github.com/BixData/gluabit32"
 	"github.com/BixData/gluasocket"
 	"github.com/cjoudrey/gluahttp"
-	//Lua "github.com/neurons-platform/gopher-lua"
-	Lua "github.com/yuin/gopher-lua"
-	"github.com/zhu327/gluadb"
 	LuaJson "layeh.com/gopher-json"
-	"log"
+	"github.com/zhu327/gluadb"
+	Lua "github.com/yuin/gopher-lua"
 	"net/http"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -225,6 +224,7 @@ func callLua(fname string, fargs ...string) string {
 	return ret.String()
 }
 
+
 func (s *ToNumExpr) Evaluate(ns NS) interface{} {
 	v := s.v.Evaluate(ns).(String)
 	r := Str2Float64(string(v))
@@ -259,7 +259,8 @@ func (s *CallLuaExpr) Evaluate(ns NS) interface{} {
 
 	// r := callLua(fmt.Sprintf("%s", funName), fmt.Sprintf("%s", argStr))
 	// r := callLua(fmt.Sprintf("%s", funName), fmt.Sprintf("%s", argStr))
-	r := callLua(fmt.Sprintf("%s", funName), argList...)
+	// r := callLua(fmt.Sprintf("%s", funName), argList...)
+	r := LuaPools.CallFunction(fmt.Sprintf("%s", funName), argList...)
 	return String(r)
 }
 
@@ -282,7 +283,8 @@ func (s *CallLuaExpr) Execute(ns NS) {
 		argList = append(argList, vs)
 	}
 
-	callLua(fmt.Sprintf("%s", funName), argList...)
+	// callLua(fmt.Sprintf("%s", funName), argList...)
+	LuaPools.CallFunction(fmt.Sprintf("%s", funName), argList...)
 }
 
 // func (s *CallLuaExpr) Execute(ns NS)  {
