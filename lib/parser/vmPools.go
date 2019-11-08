@@ -1,18 +1,16 @@
 package parser
 
-
 import (
-	"github.com/yuin/gopher-lua"
+	"fmt"
 	"github.com/BixData/gluabit32"
 	"github.com/BixData/gluasocket"
 	"github.com/cjoudrey/gluahttp"
+	"github.com/yuin/gopher-lua"
 	"github.com/zhu327/gluadb"
 	LuaJson "layeh.com/gopher-json"
 	"net/http"
 	"sync"
-	// "fmt"
 )
-
 
 type LuaPool struct {
 	m     sync.Mutex
@@ -47,6 +45,7 @@ func (pl *LuaPool) CallFunction(fname string, fargs ...string) string {
 		NRet:    1,
 		Protect: true,
 	}, ls...); err != nil {
+		fmt.Println(fname, fargs)
 		panic(err)
 	}
 	//这里获取函数返回值
@@ -65,13 +64,11 @@ func (pl *LuaPool) New() *lua.LState {
 	return L
 }
 
-
 func (pl *LuaPool) Put(L *lua.LState) {
 	pl.m.Lock()
 	defer pl.m.Unlock()
 	pl.saved = append(pl.saved, L)
 }
-
 
 func (pl *LuaPool) DoString(str string) {
 	// fmt.Print("len: ",len(pl.saved))
@@ -83,12 +80,11 @@ func (pl *LuaPool) DoString(str string) {
 	}
 }
 
-func (pl *LuaPool) PreloadModule(name string,loader lua.LGFunction) {
+func (pl *LuaPool) PreloadModule(name string, loader lua.LGFunction) {
 	for _, L := range pl.saved {
 		L.PreloadModule(name, loader)
 	}
 }
-
 
 func (pl *LuaPool) Shutdown() {
 	for _, L := range pl.saved {
@@ -97,11 +93,11 @@ func (pl *LuaPool) Shutdown() {
 }
 
 var LuaPools = &LuaPool{
-	saved: make([]*lua.LState,100),
+	saved: make([]*lua.LState, 100),
 }
 
 func init() {
-	for i,_  := range LuaPools.saved {
+	for i, _ := range LuaPools.saved {
 		LuaPools.saved[i] = LuaPools.New()
 	}
 }
