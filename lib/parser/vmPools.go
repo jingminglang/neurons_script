@@ -22,7 +22,6 @@ func (pl *LuaPool) Get() *lua.LState {
 	pl.m.Lock()
 	defer pl.m.Unlock()
 	n := len(pl.saved)
-	fmt.Printf("vmPool size is: %s\n", n)
 	if n == 0 {
 		L := pl.New()
 		err := L.DoString(pl.code)
@@ -52,6 +51,8 @@ func (pl *LuaPool) CallFunction(fname string, fargs ...string) string {
 		NRet:    1,
 		Protect: true,
 	}, ls...); err != nil {
+		n := len(pl.saved)
+		fmt.Printf("vmPool size is: %d\n", n)
 		fmt.Println(fname, fargs)
 		panic(err)
 	}
