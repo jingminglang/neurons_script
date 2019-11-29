@@ -14,6 +14,7 @@ import (
 
 type LuaPool struct {
 	m     sync.Mutex
+	code  string
 	saved []*lua.LState
 }
 
@@ -21,9 +22,15 @@ func (pl *LuaPool) Get() *lua.LState {
 	pl.m.Lock()
 	defer pl.m.Unlock()
 	n := len(pl.saved)
+	fmt.Printf("vmPool size is: %s\n", n)
 	if n == 0 {
-		// TODO: 这里的初始化方式有问题
-		return pl.New()
+		L := pl.New()
+		err := L.DoString(pl.code)
+		if err != nil {
+			panic(err)
+		}
+		pl.Put(L)
+		n = n + 1
 	}
 	x := pl.saved[n-1]
 	pl.saved = pl.saved[0 : n-1]
@@ -72,6 +79,7 @@ func (pl *LuaPool) Put(L *lua.LState) {
 
 func (pl *LuaPool) DoString(str string) {
 	// fmt.Print("len: ",len(pl.saved))
+	pl.code = str
 	for _, L := range pl.saved {
 		err := L.DoString(str)
 		if err != nil {
