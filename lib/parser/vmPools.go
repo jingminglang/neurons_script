@@ -14,6 +14,7 @@ import (
 
 type LuaPool struct {
 	m     sync.Mutex
+	preloadModules map[string]lua.LGFunction
 	code  string
 	saved []*lua.LState
 }
@@ -28,6 +29,10 @@ func (pl *LuaPool) Get() *lua.LState {
 		if err != nil {
 			panic(err)
 		}
+		for name, loader := range pl.preloadModules {
+			L.PreloadModule(name, loader)
+		}
+
 		pl.Put(L)
 		n = n + 1
 	}
@@ -90,6 +95,7 @@ func (pl *LuaPool) DoString(str string) {
 }
 
 func (pl *LuaPool) PreloadModule(name string, loader lua.LGFunction) {
+	pl.preloadModules[name] = loader
 	for _, L := range pl.saved {
 		L.PreloadModule(name, loader)
 	}
