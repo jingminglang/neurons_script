@@ -27,6 +27,7 @@ func (pl *LuaPool) Get() *lua.LState {
 		L := pl.New()
 		err := L.DoString(pl.code)
 		if err != nil {
+			fmt.Println(err)
 			panic(err)
 		}
 		for name, loader := range pl.preloadModules {
@@ -59,6 +60,7 @@ func (pl *LuaPool) CallFunction(fname string, fargs ...string) string {
 		n := len(pl.saved)
 		fmt.Printf("vmPool size is: %d\n", n)
 		fmt.Println(fname, fargs)
+		fmt.Println(err)
 		panic(err)
 	}
 	//这里获取函数返回值
