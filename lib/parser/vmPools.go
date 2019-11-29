@@ -112,6 +112,7 @@ var LuaPools = &LuaPool{
 }
 
 func init() {
+	LuaPools.preloadModules = make(map[string]lua.LGFunction)
 	for i, _ := range LuaPools.saved {
 		LuaPools.saved[i] = LuaPools.New()
 	}
