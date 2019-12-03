@@ -13,10 +13,10 @@ import (
 )
 
 type LuaPool struct {
-	m     sync.Mutex
+	m              sync.Mutex
 	preloadModules map[string]lua.LGFunction
-	code  string
-	saved []*lua.LState
+	code           string
+	saved          []*lua.LState
 }
 
 func (pl *LuaPool) Get() *lua.LState {
@@ -65,6 +65,8 @@ func (pl *LuaPool) CallFunction(fname string, fargs ...string) string {
 	}
 	//这里获取函数返回值
 	ret := L.Get(-1)
+	// remove received value
+	L.Pop(1)
 	return ret.String()
 
 }
