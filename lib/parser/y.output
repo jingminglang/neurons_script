@@ -3,7 +3,7 @@ state 0
 	$accept: .program $end 
 	stmt_block: .    (2)
 
-	.  reduce 2 (src line 42)
+	.  reduce 2 (src line 45)
 
 	program  goto 1
 	stmt_block  goto 2
@@ -24,7 +24,7 @@ state 2
 	PRINT  shift 11
 	CALL_LUA  shift 13
 	IDENTIFIER  shift 14
-	.  reduce 1 (src line 39)
+	.  reduce 1 (src line 42)
 
 	var  goto 12
 	statement  goto 3
@@ -37,7 +37,7 @@ state 2
 state 3
 	stmt_block:  stmt_block statement.    (3)
 
-	.  reduce 3 (src line 44)
+	.  reduce 3 (src line 47)
 
 
 state 4
@@ -45,7 +45,7 @@ state 4
 	statement:  if_stmt.SP 
 
 	SP  shift 15
-	.  reduce 4 (src line 48)
+	.  reduce 4 (src line 51)
 
 
 state 5
@@ -53,7 +53,7 @@ state 5
 	statement:  while_stmt.SP 
 
 	SP  shift 16
-	.  reduce 6 (src line 51)
+	.  reduce 6 (src line 54)
 
 
 state 6
@@ -61,7 +61,7 @@ state 6
 	statement:  print_stmt.SP 
 
 	SP  shift 17
-	.  reduce 8 (src line 53)
+	.  reduce 8 (src line 56)
 
 
 state 7
@@ -69,7 +69,7 @@ state 7
 	statement:  assign_stmt.SP 
 
 	SP  shift 18
-	.  reduce 10 (src line 55)
+	.  reduce 10 (src line 58)
 
 
 state 8
@@ -77,19 +77,20 @@ state 8
 	statement:  call_stmt.SP 
 
 	SP  shift 19
-	.  reduce 12 (src line 57)
+	.  reduce 12 (src line 60)
 
 
 state 9
-	if_stmt:  IF.condition THEN stmt_block ELSE stmt_block FI 
 	if_stmt:  IF.condition THEN stmt_block FI 
+	if_stmt:  IF.condition THEN stmt_block ELSE stmt_block FI 
 
 	NOT  shift 23
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
+	STRING  shift 29
 	'('  shift 25
 	.  error
 
@@ -103,144 +104,148 @@ state 10
 	while_stmt:  WHILE.condition DO stmt_block DONE 
 
 	NOT  shift 23
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
+	STRING  shift 29
 	'('  shift 25
 	.  error
 
 	var  goto 26
 	expr  goto 24
-	condition  goto 31
+	condition  goto 32
 	rel_condition  goto 21
 	sub_condition  goto 22
 
 state 11
 	print_stmt:  PRINT.arg_list 
 
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 34
+	STRING  shift 29
+	'('  shift 35
 	.  error
 
 	var  goto 26
-	expr  goto 33
-	arg_list  goto 32
+	expr  goto 34
+	arg_list  goto 33
 
 state 12
 	assign_stmt:  var.'=' expr 
 
-	'='  shift 35
+	'='  shift 36
 	.  error
 
 
 state 13
 	call_stmt:  CALL_LUA.'(' expr ',' arg_list ')' 
 
-	'('  shift 36
+	'('  shift 37
 	.  error
 
 
 state 14
-	var:  IDENTIFIER.    (31)
+	var:  IDENTIFIER.    (32)
 
-	.  reduce 31 (src line 111)
+	.  reduce 32 (src line 116)
 
 
 state 15
 	statement:  if_stmt SP.    (5)
 
-	.  reduce 5 (src line 50)
+	.  reduce 5 (src line 53)
 
 
 state 16
 	statement:  while_stmt SP.    (7)
 
-	.  reduce 7 (src line 52)
+	.  reduce 7 (src line 55)
 
 
 state 17
 	statement:  print_stmt SP.    (9)
 
-	.  reduce 9 (src line 54)
+	.  reduce 9 (src line 57)
 
 
 state 18
 	statement:  assign_stmt SP.    (11)
 
-	.  reduce 11 (src line 56)
+	.  reduce 11 (src line 59)
 
 
 state 19
 	statement:  call_stmt SP.    (13)
 
-	.  reduce 13 (src line 58)
+	.  reduce 13 (src line 61)
 
 
 state 20
-	if_stmt:  IF condition.THEN stmt_block ELSE stmt_block FI 
 	if_stmt:  IF condition.THEN stmt_block FI 
+	if_stmt:  IF condition.THEN stmt_block ELSE stmt_block FI 
 
-	THEN  shift 37
+	THEN  shift 38
 	.  error
 
 
 state 21
 	condition:  rel_condition.    (22)
-	sub_condition:  rel_condition.    (29)
+	sub_condition:  rel_condition.    (30)
 
-	AND  reduce 29 (src line 105)
-	OR  reduce 29 (src line 105)
-	.  reduce 22 (src line 92)
+	AND  reduce 30 (src line 110)
+	OR  reduce 30 (src line 110)
+	.  reduce 22 (src line 95)
 
 
 state 22
 	condition:  sub_condition.AND sub_condition 
 	condition:  sub_condition.OR sub_condition 
 
-	AND  shift 38
-	OR  shift 39
+	AND  shift 39
+	OR  shift 40
 	.  error
 
 
 state 23
 	condition:  NOT.sub_condition 
 
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
+	STRING  shift 29
 	'('  shift 25
 	.  error
 
 	var  goto 26
 	expr  goto 24
-	rel_condition  goto 41
-	sub_condition  goto 40
+	rel_condition  goto 42
+	sub_condition  goto 41
 
 state 24
 	rel_condition:  expr.EQ expr 
 	rel_condition:  expr.'<' expr 
 	rel_condition:  expr.'>' expr 
+	rel_condition:  expr.    (29)
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
-	EQ  shift 42
-	'+'  shift 45
-	'-'  shift 46
-	'*'  shift 47
-	'/'  shift 48
-	'<'  shift 43
-	'>'  shift 44
-	.  error
+	EQ  shift 43
+	'+'  shift 46
+	'-'  shift 47
+	'*'  shift 48
+	'/'  shift 49
+	'<'  shift 44
+	'>'  shift 45
+	.  reduce 29 (src line 107)
 
 
 state 25
@@ -248,403 +253,427 @@ state 25
 	expr:  '('.expr ')' 
 
 	NOT  shift 23
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
+	STRING  shift 29
 	'('  shift 25
 	.  error
 
 	var  goto 26
-	expr  goto 50
-	condition  goto 49
+	expr  goto 51
+	condition  goto 50
 	rel_condition  goto 21
 	sub_condition  goto 22
 
 state 26
-	expr:  var.    (32)
+	expr:  var.    (33)
 
-	.  reduce 32 (src line 125)
+	.  reduce 33 (src line 130)
 
 
 state 27
-	expr:  NUMBER.    (33)
+	expr:  BOOL.    (34)
 
-	.  reduce 33 (src line 126)
+	.  reduce 34 (src line 131)
 
 
 state 28
-	expr:  STRING.    (34)
+	expr:  NUMBER.    (35)
 
-	.  reduce 34 (src line 128)
+	.  reduce 35 (src line 132)
 
 
 state 29
-	expr:  CALL_LUA.'(' expr ',' arg_list ')' 
+	expr:  STRING.    (36)
 
-	'('  shift 51
-	.  error
+	.  reduce 36 (src line 134)
 
 
 state 30
-	expr:  TO_NUM.'(' expr ')' 
+	expr:  CALL_LUA.'(' expr ',' arg_list ')' 
 
 	'('  shift 52
 	.  error
 
 
 state 31
-	while_stmt:  WHILE condition.DO stmt_block DONE 
+	expr:  TO_NUM.'(' expr ')' 
 
-	DO  shift 53
+	'('  shift 53
 	.  error
 
 
 state 32
-	print_stmt:  PRINT arg_list.    (19)
-	arg_list:  arg_list.',' expr 
+	while_stmt:  WHILE condition.DO stmt_block DONE 
 
-	','  shift 54
-	.  reduce 19 (src line 82)
+	DO  shift 54
+	.  error
 
 
 state 33
+	print_stmt:  PRINT arg_list.    (19)
+	arg_list:  arg_list.',' expr 
+
+	','  shift 55
+	.  reduce 19 (src line 85)
+
+
+state 34
 	arg_list:  expr.    (20)
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
-	'+'  shift 45
-	'-'  shift 46
-	'*'  shift 47
-	'/'  shift 48
-	.  reduce 20 (src line 87)
+	'+'  shift 46
+	'-'  shift 47
+	'*'  shift 48
+	'/'  shift 49
+	.  reduce 20 (src line 90)
 
-
-state 34
-	expr:  '('.expr ')' 
-
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
-	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 34
-	.  error
-
-	var  goto 26
-	expr  goto 55
 
 state 35
-	assign_stmt:  var '='.expr 
+	expr:  '('.expr ')' 
 
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 34
+	STRING  shift 29
+	'('  shift 35
 	.  error
 
 	var  goto 26
 	expr  goto 56
 
 state 36
-	call_stmt:  CALL_LUA '('.expr ',' arg_list ')' 
+	assign_stmt:  var '='.expr 
 
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 34
+	STRING  shift 29
+	'('  shift 35
 	.  error
 
 	var  goto 26
 	expr  goto 57
 
 state 37
-	if_stmt:  IF condition THEN.stmt_block ELSE stmt_block FI 
-	if_stmt:  IF condition THEN.stmt_block FI 
-	stmt_block: .    (2)
+	call_stmt:  CALL_LUA '('.expr ',' arg_list ')' 
 
-	.  reduce 2 (src line 42)
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
+	IDENTIFIER  shift 14
+	STRING  shift 29
+	'('  shift 35
+	.  error
 
-	stmt_block  goto 58
+	var  goto 26
+	expr  goto 58
 
 state 38
-	condition:  sub_condition AND.sub_condition 
+	if_stmt:  IF condition THEN.stmt_block FI 
+	if_stmt:  IF condition THEN.stmt_block ELSE stmt_block FI 
+	stmt_block: .    (2)
 
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
-	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 25
-	.  error
+	.  reduce 2 (src line 45)
 
-	var  goto 26
-	expr  goto 24
-	rel_condition  goto 41
-	sub_condition  goto 59
+	stmt_block  goto 59
 
 state 39
-	condition:  sub_condition OR.sub_condition 
+	condition:  sub_condition AND.sub_condition 
 
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
+	STRING  shift 29
 	'('  shift 25
 	.  error
 
 	var  goto 26
 	expr  goto 24
-	rel_condition  goto 41
+	rel_condition  goto 42
 	sub_condition  goto 60
 
 state 40
-	condition:  NOT sub_condition.    (25)
+	condition:  sub_condition OR.sub_condition 
 
-	.  reduce 25 (src line 96)
-
-
-state 41
-	sub_condition:  rel_condition.    (29)
-
-	.  reduce 29 (src line 105)
-
-
-state 42
-	rel_condition:  expr EQ.expr 
-
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 34
+	STRING  shift 29
+	'('  shift 25
 	.  error
 
 	var  goto 26
-	expr  goto 61
+	expr  goto 24
+	rel_condition  goto 42
+	sub_condition  goto 61
+
+state 41
+	condition:  NOT sub_condition.    (25)
+
+	.  reduce 25 (src line 99)
+
+
+state 42
+	sub_condition:  rel_condition.    (30)
+
+	.  reduce 30 (src line 110)
+
 
 state 43
-	rel_condition:  expr '<'.expr 
+	rel_condition:  expr EQ.expr 
 
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 34
+	STRING  shift 29
+	'('  shift 35
 	.  error
 
 	var  goto 26
 	expr  goto 62
 
 state 44
-	rel_condition:  expr '>'.expr 
+	rel_condition:  expr '<'.expr 
 
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 34
+	STRING  shift 29
+	'('  shift 35
 	.  error
 
 	var  goto 26
 	expr  goto 63
 
 state 45
-	expr:  expr '+'.expr 
+	rel_condition:  expr '>'.expr 
 
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 34
+	STRING  shift 29
+	'('  shift 35
 	.  error
 
 	var  goto 26
 	expr  goto 64
 
 state 46
-	expr:  expr '-'.expr 
+	expr:  expr '+'.expr 
 
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 34
+	STRING  shift 29
+	'('  shift 35
 	.  error
 
 	var  goto 26
 	expr  goto 65
 
 state 47
-	expr:  expr '*'.expr 
+	expr:  expr '-'.expr 
 
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 34
+	STRING  shift 29
+	'('  shift 35
 	.  error
 
 	var  goto 26
 	expr  goto 66
 
 state 48
-	expr:  expr '/'.expr 
+	expr:  expr '*'.expr 
 
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 34
+	STRING  shift 29
+	'('  shift 35
 	.  error
 
 	var  goto 26
 	expr  goto 67
 
 state 49
+	expr:  expr '/'.expr 
+
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
+	IDENTIFIER  shift 14
+	STRING  shift 29
+	'('  shift 35
+	.  error
+
+	var  goto 26
+	expr  goto 68
+
+state 50
 	sub_condition:  '(' condition.')' 
 
-	')'  shift 68
+	')'  shift 69
 	.  error
 
 
-state 50
+51: shift/reduce conflict (shift 70(0), red'n 29(0)) on ')'
+state 51
 	rel_condition:  expr.EQ expr 
 	rel_condition:  expr.'<' expr 
 	rel_condition:  expr.'>' expr 
+	rel_condition:  expr.    (29)
 	expr:  '(' expr.')' 
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
-	EQ  shift 42
-	'+'  shift 45
-	'-'  shift 46
-	'*'  shift 47
-	'/'  shift 48
-	')'  shift 69
-	'<'  shift 43
-	'>'  shift 44
-	.  error
+	EQ  shift 43
+	'+'  shift 46
+	'-'  shift 47
+	'*'  shift 48
+	'/'  shift 49
+	')'  shift 70
+	'<'  shift 44
+	'>'  shift 45
+	.  reduce 29 (src line 107)
 
-
-state 51
-	expr:  CALL_LUA '('.expr ',' arg_list ')' 
-
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
-	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 34
-	.  error
-
-	var  goto 26
-	expr  goto 70
 
 state 52
-	expr:  TO_NUM '('.expr ')' 
+	expr:  CALL_LUA '('.expr ',' arg_list ')' 
 
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 34
+	STRING  shift 29
+	'('  shift 35
 	.  error
 
 	var  goto 26
 	expr  goto 71
 
 state 53
-	while_stmt:  WHILE condition DO.stmt_block DONE 
-	stmt_block: .    (2)
+	expr:  TO_NUM '('.expr ')' 
 
-	.  reduce 2 (src line 42)
-
-	stmt_block  goto 72
-
-state 54
-	arg_list:  arg_list ','.expr 
-
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 34
+	STRING  shift 29
+	'('  shift 35
 	.  error
 
 	var  goto 26
-	expr  goto 73
+	expr  goto 72
+
+state 54
+	while_stmt:  WHILE condition DO.stmt_block DONE 
+	stmt_block: .    (2)
+
+	.  reduce 2 (src line 45)
+
+	stmt_block  goto 73
 
 state 55
+	arg_list:  arg_list ','.expr 
+
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
+	IDENTIFIER  shift 14
+	STRING  shift 29
+	'('  shift 35
+	.  error
+
+	var  goto 26
+	expr  goto 74
+
+state 56
 	expr:  '(' expr.')' 
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
-	'+'  shift 45
-	'-'  shift 46
-	'*'  shift 47
-	'/'  shift 48
-	')'  shift 69
+	'+'  shift 46
+	'-'  shift 47
+	'*'  shift 48
+	'/'  shift 49
+	')'  shift 70
 	.  error
 
 
-state 56
+state 57
 	assign_stmt:  var '=' expr.    (18)
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
-	'+'  shift 45
-	'-'  shift 46
-	'*'  shift 47
-	'/'  shift 48
-	.  reduce 18 (src line 77)
+	'+'  shift 46
+	'-'  shift 47
+	'*'  shift 48
+	'/'  shift 49
+	.  reduce 18 (src line 80)
 
 
-state 57
+state 58
 	call_stmt:  CALL_LUA '(' expr.',' arg_list ')' 
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
-	'+'  shift 45
-	'-'  shift 46
-	'*'  shift 47
-	'/'  shift 48
-	','  shift 74
+	'+'  shift 46
+	'-'  shift 47
+	'*'  shift 48
+	'/'  shift 49
+	','  shift 75
 	.  error
 
 
-state 58
+state 59
 	stmt_block:  stmt_block.statement 
-	if_stmt:  IF condition THEN stmt_block.ELSE stmt_block FI 
 	if_stmt:  IF condition THEN stmt_block.FI 
+	if_stmt:  IF condition THEN stmt_block.ELSE stmt_block FI 
 
 	IF  shift 9
-	ELSE  shift 75
+	ELSE  shift 77
 	FI  shift 76
 	WHILE  shift 10
 	PRINT  shift 11
@@ -660,129 +689,114 @@ state 58
 	print_stmt  goto 6
 	call_stmt  goto 8
 
-state 59
+state 60
 	condition:  sub_condition AND sub_condition.    (23)
 
-	.  reduce 23 (src line 94)
-
-
-state 60
-	condition:  sub_condition OR sub_condition.    (24)
-
-	.  reduce 24 (src line 95)
+	.  reduce 23 (src line 97)
 
 
 state 61
+	condition:  sub_condition OR sub_condition.    (24)
+
+	.  reduce 24 (src line 98)
+
+
+state 62
 	rel_condition:  expr EQ expr.    (26)
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
-	'+'  shift 45
-	'-'  shift 46
-	'*'  shift 47
-	'/'  shift 48
-	.  reduce 26 (src line 99)
+	'+'  shift 46
+	'-'  shift 47
+	'*'  shift 48
+	'/'  shift 49
+	.  reduce 26 (src line 103)
 
 
-state 62
+state 63
 	rel_condition:  expr '<' expr.    (27)
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
-	'+'  shift 45
-	'-'  shift 46
-	'*'  shift 47
-	'/'  shift 48
-	.  reduce 27 (src line 101)
+	'+'  shift 46
+	'-'  shift 47
+	'*'  shift 48
+	'/'  shift 49
+	.  reduce 27 (src line 105)
 
 
-state 63
+state 64
 	rel_condition:  expr '>' expr.    (28)
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
-	'+'  shift 45
-	'-'  shift 46
-	'*'  shift 47
-	'/'  shift 48
-	.  reduce 28 (src line 102)
-
-
-state 64
-	expr:  expr.'+' expr 
-	expr:  expr '+' expr.    (36)
-	expr:  expr.'-' expr 
-	expr:  expr.'*' expr 
-	expr:  expr.'/' expr 
-
-	'*'  shift 47
-	'/'  shift 48
-	.  reduce 36 (src line 130)
+	'+'  shift 46
+	'-'  shift 47
+	'*'  shift 48
+	'/'  shift 49
+	.  reduce 28 (src line 106)
 
 
 state 65
 	expr:  expr.'+' expr 
+	expr:  expr '+' expr.    (38)
 	expr:  expr.'-' expr 
-	expr:  expr '-' expr.    (37)
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
-	'*'  shift 47
-	'/'  shift 48
-	.  reduce 37 (src line 131)
+	'*'  shift 48
+	'/'  shift 49
+	.  reduce 38 (src line 136)
 
 
 state 66
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
+	expr:  expr '-' expr.    (39)
 	expr:  expr.'*' expr 
-	expr:  expr '*' expr.    (38)
 	expr:  expr.'/' expr 
 
-	.  reduce 38 (src line 132)
+	'*'  shift 48
+	'/'  shift 49
+	.  reduce 39 (src line 137)
 
 
 state 67
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
+	expr:  expr '*' expr.    (40)
 	expr:  expr.'/' expr 
-	expr:  expr '/' expr.    (39)
 
-	.  reduce 39 (src line 133)
+	.  reduce 40 (src line 138)
 
 
 state 68
-	sub_condition:  '(' condition ')'.    (30)
-
-	.  reduce 30 (src line 107)
-
-
-state 69
-	expr:  '(' expr ')'.    (35)
-
-	.  reduce 35 (src line 129)
-
-
-state 70
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
-	expr:  CALL_LUA '(' expr.',' arg_list ')' 
+	expr:  expr '/' expr.    (41)
 
-	'+'  shift 45
-	'-'  shift 46
-	'*'  shift 47
-	'/'  shift 48
-	','  shift 77
-	.  error
+	.  reduce 41 (src line 139)
+
+
+state 69
+	sub_condition:  '(' condition ')'.    (31)
+
+	.  reduce 31 (src line 112)
+
+
+state 70
+	expr:  '(' expr ')'.    (37)
+
+	.  reduce 37 (src line 135)
 
 
 state 71
@@ -790,23 +804,38 @@ state 71
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
-	expr:  TO_NUM '(' expr.')' 
+	expr:  CALL_LUA '(' expr.',' arg_list ')' 
 
-	'+'  shift 45
-	'-'  shift 46
-	'*'  shift 47
-	'/'  shift 48
-	')'  shift 78
+	'+'  shift 46
+	'-'  shift 47
+	'*'  shift 48
+	'/'  shift 49
+	','  shift 78
 	.  error
 
 
 state 72
+	expr:  expr.'+' expr 
+	expr:  expr.'-' expr 
+	expr:  expr.'*' expr 
+	expr:  expr.'/' expr 
+	expr:  TO_NUM '(' expr.')' 
+
+	'+'  shift 46
+	'-'  shift 47
+	'*'  shift 48
+	'/'  shift 49
+	')'  shift 79
+	.  error
+
+
+state 73
 	stmt_block:  stmt_block.statement 
 	while_stmt:  WHILE condition DO stmt_block.DONE 
 
 	IF  shift 9
 	WHILE  shift 10
-	DONE  shift 79
+	DONE  shift 80
 	PRINT  shift 11
 	CALL_LUA  shift 13
 	IDENTIFIER  shift 14
@@ -820,91 +849,93 @@ state 72
 	print_stmt  goto 6
 	call_stmt  goto 8
 
-state 73
+state 74
 	arg_list:  arg_list ',' expr.    (21)
 	expr:  expr.'+' expr 
 	expr:  expr.'-' expr 
 	expr:  expr.'*' expr 
 	expr:  expr.'/' expr 
 
-	'+'  shift 45
-	'-'  shift 46
-	'*'  shift 47
-	'/'  shift 48
-	.  reduce 21 (src line 89)
+	'+'  shift 46
+	'-'  shift 47
+	'*'  shift 48
+	'/'  shift 49
+	.  reduce 21 (src line 92)
 
 
-state 74
+state 75
 	call_stmt:  CALL_LUA '(' expr ','.arg_list ')' 
 
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 34
+	STRING  shift 29
+	'('  shift 35
 	.  error
 
 	var  goto 26
-	expr  goto 33
-	arg_list  goto 80
-
-state 75
-	if_stmt:  IF condition THEN stmt_block ELSE.stmt_block FI 
-	stmt_block: .    (2)
-
-	.  reduce 2 (src line 42)
-
-	stmt_block  goto 81
+	expr  goto 34
+	arg_list  goto 81
 
 state 76
-	if_stmt:  IF condition THEN stmt_block FI.    (16)
+	if_stmt:  IF condition THEN stmt_block FI.    (15)
 
-	.  reduce 16 (src line 69)
+	.  reduce 15 (src line 70)
 
 
 state 77
+	if_stmt:  IF condition THEN stmt_block ELSE.stmt_block FI 
+	stmt_block: .    (2)
+
+	.  reduce 2 (src line 45)
+
+	stmt_block  goto 82
+
+state 78
 	expr:  CALL_LUA '(' expr ','.arg_list ')' 
 
-	CALL_LUA  shift 29
-	TO_NUM  shift 30
-	NUMBER  shift 27
+	CALL_LUA  shift 30
+	TO_NUM  shift 31
+	NUMBER  shift 28
+	BOOL  shift 27
 	IDENTIFIER  shift 14
-	STRING  shift 28
-	'('  shift 34
+	STRING  shift 29
+	'('  shift 35
 	.  error
 
 	var  goto 26
-	expr  goto 33
-	arg_list  goto 82
-
-state 78
-	expr:  TO_NUM '(' expr ')'.    (41)
-
-	.  reduce 41 (src line 136)
-
+	expr  goto 34
+	arg_list  goto 83
 
 state 79
-	while_stmt:  WHILE condition DO stmt_block DONE.    (17)
+	expr:  TO_NUM '(' expr ')'.    (43)
 
-	.  reduce 17 (src line 72)
+	.  reduce 43 (src line 142)
 
 
 state 80
-	call_stmt:  CALL_LUA '(' expr ',' arg_list.')' 
-	arg_list:  arg_list.',' expr 
+	while_stmt:  WHILE condition DO stmt_block DONE.    (17)
 
-	','  shift 54
-	')'  shift 83
-	.  error
+	.  reduce 17 (src line 75)
 
 
 state 81
+	call_stmt:  CALL_LUA '(' expr ',' arg_list.')' 
+	arg_list:  arg_list.',' expr 
+
+	','  shift 55
+	')'  shift 84
+	.  error
+
+
+state 82
 	stmt_block:  stmt_block.statement 
 	if_stmt:  IF condition THEN stmt_block ELSE stmt_block.FI 
 
 	IF  shift 9
-	FI  shift 84
+	FI  shift 85
 	WHILE  shift 10
 	PRINT  shift 11
 	CALL_LUA  shift 13
@@ -919,42 +950,42 @@ state 81
 	print_stmt  goto 6
 	call_stmt  goto 8
 
-state 82
+state 83
 	arg_list:  arg_list.',' expr 
 	expr:  CALL_LUA '(' expr ',' arg_list.')' 
 
-	','  shift 54
-	')'  shift 85
+	','  shift 55
+	')'  shift 86
 	.  error
 
 
-state 83
+state 84
 	call_stmt:  CALL_LUA '(' expr ',' arg_list ')'.    (14)
 
-	.  reduce 14 (src line 63)
-
-
-state 84
-	if_stmt:  IF condition THEN stmt_block ELSE stmt_block FI.    (15)
-
-	.  reduce 15 (src line 67)
+	.  reduce 14 (src line 66)
 
 
 state 85
-	expr:  CALL_LUA '(' expr ',' arg_list ')'.    (40)
+	if_stmt:  IF condition THEN stmt_block ELSE stmt_block FI.    (16)
 
-	.  reduce 40 (src line 135)
+	.  reduce 16 (src line 72)
 
 
-31 terminals, 15 nonterminals
-42 grammar rules, 86/8000 states
-0 shift/reduce, 0 reduce/reduce conflicts reported
+state 86
+	expr:  CALL_LUA '(' expr ',' arg_list ')'.    (42)
+
+	.  reduce 42 (src line 141)
+
+
+32 terminals, 15 nonterminals
+44 grammar rules, 87/8000 states
+1 shift/reduce, 0 reduce/reduce conflicts reported
 64 working sets used
 memory: parser 82/120000
-83 extra closures
-241 shift entries, 3 exceptions
+84 extra closures
+263 shift entries, 3 exceptions
 48 goto entries
 47 entries saved by goto default
-Optimizer space used: output 173/120000
-173 table entries, 22 zero
-maximum spread: 31, maximum offset: 81
+Optimizer space used: output 168/120000
+168 table entries, 14 zero
+maximum spread: 32, maximum offset: 82

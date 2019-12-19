@@ -32,6 +32,14 @@ func (l *Lexer) Lex(lval *yySymType) int {
 	case scanner.Ident:
 		ident := l.s.TokenText()
                 // fmt.Println(ident)
+		if ident == "true" {
+			lval.bl = true
+			return BOOL
+		}
+		if ident == "false" {
+			lval.bl = false
+			return BOOL
+		}
 		keyword, isKeyword := lexKeywords[ident]
 		if isKeyword {
                  //       fmt.Println("keyword: ",ident)

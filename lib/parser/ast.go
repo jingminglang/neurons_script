@@ -14,6 +14,7 @@ import (
 	"strings"
 )
 
+type Bool bool
 type Number float64
 type String string
 type Identifier string
@@ -83,8 +84,12 @@ func (v Number) Evaluate(ns NS) interface{} {
 	return v
 }
 
-func (s String) Evaluate(ns NS) interface{} {
-	return s
+func (v String) Evaluate(ns NS) interface{} {
+	return v
+}
+
+func (v Bool) Evaluate(ns NS) interface{} {
+	return v
 }
 
 func (s *AssignStmt) Execute(ns NS) {
@@ -159,6 +164,10 @@ func (e *ArithExpr) Evaluate(ns NS) interface{} {
 func (e *RelExpr) Evaluate(ns NS) interface{} {
 	lhs := e.lhs.Evaluate(ns)
 	rhs := e.rhs.Evaluate(ns)
+	if lhs, ok := lhs.(Bool); ok {
+		rhs := rhs.(Bool)
+		return lhs == rhs
+	}
 
 	if lhs, ok := lhs.(String); ok {
 		rhs := rhs.(String)

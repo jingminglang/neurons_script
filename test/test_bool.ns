@@ -1,0 +1,28 @@
+
+
+a = true
+if true
+then 
+ print "true";
+else 
+ print "false";
+fi
+
+if a
+then 
+ print "true";
+else 
+ print "false";
+fi
+
+if a eq true
+then 
+ print "true";
+else 
+ print "false";
+fi
+
+//while true
+//do
+//   print "run"
+//done

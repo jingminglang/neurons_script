@@ -7,7 +7,9 @@ package parser
 // 这里就是token对应的真实类型和存放值的地方
 %union{
 	num        float64
+  bl         bool
 	str        string
+  table      map[interface{}]interface{}
 	lval       Lvalue
 	expr       Expression
 	stmt       Statement
@@ -20,6 +22,7 @@ package parser
 
 %token IF THEN ELSE FI WHILE DO DONE AND OR NOT EQ SP PRINT CALL_LUA TO_NUM
 %token <num> NUMBER
+%token <bl>  BOOL
 %token <str> IDENTIFIER STRING
 
 
@@ -65,8 +68,8 @@ call_stmt : CALL_LUA '('  expr  ',' arg_list ')'  { $$ = &CallLuaExpr{$3,$5} }
 
 
 if_stmt
-        : IF condition THEN stmt_block ELSE stmt_block FI { $$ = &IfStmt{$2, $4, $6} }
-        | IF condition THEN stmt_block FI { $$ = &IfStmt{$2, $4, nil} }
+        : IF condition THEN stmt_block FI { $$ = &IfStmt{$2, $4, nil} }
+        | IF condition THEN stmt_block ELSE stmt_block FI { $$ = &IfStmt{$2, $4, $6} }
         ;
 
 while_stmt
@@ -96,10 +99,12 @@ condition
 	| NOT sub_condition { $$ = &LogicExpr{NOT, $2, nil} }
         ;
 
+
 rel_condition
 	: expr EQ expr { $$ = &RelExpr{EQ, $1, $3} }
 	| expr '<' expr { $$ = &RelExpr{'<', $1, $3} }
 	| expr '>' expr { $$ = &RelExpr{'>', $1, $3} }
+  | expr { $$ = &RelExpr{EQ, Bool(true), $1} }
 	;
 
 sub_condition
@@ -123,6 +128,7 @@ var	: IDENTIFIER { $$ = Identifier($1) }
 
 // 这里定义的都是可以作为返回值的(右值)
 expr	: var { $$ = $1 }
+ | BOOL { $$ = Bool($1) }
 	| NUMBER { $$ = Number($1) }
 //        | string { $$ = $1 }
 	| STRING { $$ = String($1) }
