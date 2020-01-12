@@ -40,4 +40,9 @@ r = _lua("hello", "hello", "world")
 print r
 ```
 
+# usage
+```
+./build.sh
+./dist/neurons_script -lua fun.lua test/test_lua_json.ns
+```
 
