@@ -9,8 +9,11 @@ Used to write simple scripts, For neurons-platform
 ## variabal
 ```
 a = 1
-b = `hello`
-c = `world
+b = 2
+c = `hello `
+d = `world`
+print a + b
+print c + d
 ```
 
 ## if
