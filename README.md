@@ -43,9 +43,19 @@ r = _lua("hello", "hello", "world")
 print r
 ```
 
+# install
+```
+# install goyacc
+git clone https://github.com/golang/tools.git
+cd tools/cmd/goyacc/
+go build
+cp goyacc /usr/local/go/bin/
+
+./build.sh
+```
+
 # usage
 ```
-./build.sh
 ./dist/neurons_script -lua fun.lua test/test_lua_json.ns
 ```
 
