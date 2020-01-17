@@ -1,0 +1,4 @@
+
+
+r = _lua(`xxxxx`,"")
+print r

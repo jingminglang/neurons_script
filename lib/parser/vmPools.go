@@ -52,23 +52,26 @@ func (pl *LuaPool) CallFunction(fname string, fargs ...string) string {
 	L := pl.Get()
 	defer pl.Put(L)
 	fn := L.GetGlobal(fname)
-	if err := L.CallByParam(lua.P{
-		Fn:      fn,
-		NRet:    1,
-		Protect: true,
-	}, ls...); err != nil {
-		n := len(pl.saved)
-		fmt.Printf("vmPool size is: %d\n", n)
-		fmt.Println(fname, fargs)
-		fmt.Println(err)
-		panic(err)
+	// fmt.Println(fn.String())
+	if fn.String() != "nil" {
+		if err := L.CallByParam(lua.P{
+			Fn:      fn,
+			NRet:    1,
+			Protect: true,
+		}, ls...); err != nil {
+			n := len(pl.saved)
+			fmt.Printf("vmPool size is: %d\n", n)
+			fmt.Println(fname, fargs)
+			fmt.Println(err)
+			panic(err)
+		}
+		//这里获取函数返回值
+		ret := L.Get(-1)
+		// remove received value
+		L.Pop(1)
+		return ret.String()
 	}
-	//这里获取函数返回值
-	ret := L.Get(-1)
-	// remove received value
-	L.Pop(1)
-	return ret.String()
-
+	return ""
 }
 
 func (pl *LuaPool) New() *lua.LState {
