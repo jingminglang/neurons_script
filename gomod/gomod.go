@@ -8,6 +8,7 @@ import (
 
 func matchRegex(str, re string) bool {
 	rp := regexp.MustCompile(re)
+
 	return rp.MatchString(str)
 }
 
